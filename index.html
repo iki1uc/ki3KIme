@@ -1,3 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ROOT index.html – KItriKIme Startpunkt</title>
+</head>
+
+<body>
+  <h1>KItriKIme – ROOT</h1>
+  <p>System wird geprüft…</p>
+
 <script type="module">
 import { ghostCheck } from "./core/ghost.js";
 import { wraightLoop } from "./core/wraight.js";
@@ -5,6 +16,7 @@ import { helpAuto } from "./core/help.js";
 import { errorTri } from "./core/error.js";
 import { KItriKIme } from "./kit.js";
 
+// FRAME – identisch wie im gesamten System
 const frame = {
   context: null,
   repeat: 4,
@@ -14,11 +26,18 @@ const frame = {
   state: "ACTIVE"
 };
 
+// KItriKIme prüfen
 const KIT = KItriKIme(frame);
 console.log("KItriKIme:", KIT);
 
 // AUTOMATISCHER ZUG
 if (KIT === 1) {
+  // Weiter in die Operator-Ebene
   window.location.href = "on3.html";
+} else {
+  document.body.innerHTML += "<p>KItriKIme = 0 → System bleibt im ROOT.</p>";
 }
 </script>
+
+</body>
+</html>
