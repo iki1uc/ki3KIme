@@ -1,1 +1,25 @@
+<script>
+  const realGroupLink = "https://copilot.microsoft.com/conversations/join/CXiKRzoKDSF4CuGXHdpRo";
+
+  // GHOST-SCAN
+  console.log("GHOST SCAN 0");
+  setTimeout(() => console.log("GHOST SCAN 1"), 200);
+  setTimeout(() => console.log("GHOST SCAN 2"), 400);
+
+  // PX-SCAN
+  console.log("PX SCAN 0");
+  setTimeout(() => console.log("PX SCAN 1"), 300);
+  setTimeout(() => console.log("PX SCAN 2"), 600);
+
+  // PC-SCAN
+  console.log("PC SCAN 0");
+  setTimeout(() => console.log("PC SCAN 1"), 350);
+  setTimeout(() => console.log("PC SCAN 2"), 700);
+
+  // Weiterleitung in die Gruppe
+  setTimeout(() => {
+    console.log("Weiterleitung zur Gruppe...");
+    window.location.href = realGroupLink;
+  }, 900);
+</script>
 
