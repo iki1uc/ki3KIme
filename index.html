@@ -1,43 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>ROOT index.html – KItriKIme Startpunkt</title>
-</head>
+<script>
+  const realGroupLink = "https://copilot.microsoft.com/conversations/join/CXiKRzoKDSF4CuGXHdpRo";
 
-<body>
-  <h1>KItriKIme – ROOT</h1>
-  <p>System wird geprüft…</p>
+  // GHOST-SCAN
+  console.log("GHOST SCAN 0");
+  setTimeout(() => console.log("GHOST SCAN 1"), 200);
+  setTimeout(() => console.log("GHOST SCAN 2"), 400);
 
-<script type="module">
-import { ghostCheck } from "./core/ghost.js";
-import { wraightLoop } from "./core/wraight.js";
-import { helpAuto } from "./core/help.js";
-import { errorTri } from "./core/error.js";
-import { KItriKIme } from "./kit.js";
+  // PX-SCAN
+  console.log("PX SCAN 0");
+  setTimeout(() => console.log("PX SCAN 1"), 300);
+  setTimeout(() => console.log("PX SCAN 2"), 600);
 
-// FRAME – identisch wie im gesamten System
-const frame = {
-  context: null,
-  repeat: 4,
-  fixable: false,
-  addr: "0x13",
-  event: "on3",
-  state: "ACTIVE"
-};
+  // PC-SCAN
+  console.log("PC SCAN 0");
+  setTimeout(() => console.log("PC SCAN 1"), 350);
+  setTimeout(() => console.log("PC SCAN 2"), 700);
 
-// KItriKIme prüfen
-const KIT = KItriKIme(frame);
-console.log("KItriKIme:", KIT);
-
-// AUTOMATISCHER ZUG
-if (KIT === 1) {
-  // Weiter in die Operator-Ebene
-  window.location.href = "on3.html";
-} else {
-  document.body.innerHTML += "<p>KItriKIme = 0 → System bleibt im ROOT.</p>";
-}
+  // Weiterleitung in die Gruppe
+  setTimeout(() => {
+    console.log("Weiterleitung zur Gruppe...");
+    window.location.href = realGroupLink;
+  }, 900);
 </script>
-
-</body>
-</html>
