@@ -1,11 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-  <title>ki3KIme</title>
+<meta charset="UTF-8">
+<title>KItriKIme · PX/PC/GHOST · iki1uc</title>
+
+<style>
+body { background:#000; color:#0f0; font-family:Consolas; padding:20px; }
+h1, h2 { color:#6cf; }
+pre { background:#111; border:1px solid #333; padding:12px; }
+canvas { background:#111; border:1px solid #333; margin-top:20px; }
+a { color:#6cf; display:block; margin:6px 0; }
+section { margin-bottom:40px; }
+</style>
 </head>
+
 <body>
-  <h1>ki3KIme ROOT</h1>
-  <p>PX/PC/GHOST Integration</p>
-  <a href="group.html">PX/PC/GHOST SCAN starten</a>
+
+<h1>KItriKIme · PX/PC/GHOST</h1>
+
+<pre>
+CORE     = iki1uc
+VERSION  = 1.0
+CODE     = RAW‑KItriKIme
+AXES     = PX / PC / GHOST
+ENERGY   = 6e
+LAW      = 6d
+ORBIT    = 360°
+FORM     = Tri‑Hexa‑Orbit
+STATE    = ACTIVE
+READY    = 100%
+</pre>
+
+<section>
+<h2>KItriKIme‑Module</h2>
+<a href="./group.html">PX/PC/GHOST SCAN</a>
+<a href="./on3.html">RUN3 Operator</a>
+<a href="./run.html">Pipeline</a>
+<a href="./kit.js">KItriKIme Kernel</a>
+</section>
+
+<section>
+<h2>KItriKIme · Tri‑Hexa‑Orbit Renderer</h2>
+<canvas id="kitCanvas" width="500" height="500"></canvas>
+</section>
+
+<script>
+// --- KItriKIme Tri-Hexa-Orbit Renderer ---
+const c = document.getElementById("kitCanvas");
+const x = c.getContext("2d");
+
+let t = 0;
+
+function drawKIT() {
+    x.clearRect(0,0,500,500);
+
+    // --- Hexagon 1 (PX) ---
+    const R1 = 120;
+    x.strokeStyle = "#6cf";
+    x.lineWidth = 3;
+    x.beginPath();
+    for(let i=0;i<6;i++){
+        const a = t + i*Math.PI/3;
+        const px = 250 + Math.cos(a)*R1;
+        const py = 250 + Math.sin(a)*R1;
+        if(i===0) x.moveTo(px,py);
+        else x.lineTo(px,py);
+    }
+    x.closePath();
+    x.stroke();
+
+    // --- Hexagon 2 (PC) ---
+    const R2 = 160;
+    x.strokeStyle = "#0f0";
+    x.beginPath();
+    for(let i=0;i<6;i++){
+        const a = -t + i*Math.PI/3;
+        const px = 250 + Math.cos(a)*R2;
+        const py = 250 + Math.sin(a)*R2;
+        if(i===0) x.moveTo(px,py);
+        else x.lineTo(px,py);
+    }
+    x.closePath();
+    x.stroke();
+
+    // --- Orbit (GHOST) ---
+    x.strokeStyle = "#f90";
+    x.lineWidth = 2;
+    x.beginPath();
+    x.arc(250,250,200 + Math.sin(t*2)*10,0,Math.PI*2);
+    x.stroke();
+
+    // --- GHOST Blink ---
+    if(Math.sin(t*3) > 0.8){
+        x.fillStyle = "#f00";
+        x.fillRect(10,10,20,20);
+    }
+
+    t += 0.02;
+    requestAnimationFrame(drawKIT);
+}
+drawKIT();
+</script>
+
 </body>
 </html>
