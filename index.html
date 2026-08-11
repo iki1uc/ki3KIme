@@ -45,80 +45,19 @@ READY    = 100%
 </section>
 
 <script>
-// --- KItriKIme Tri-Hexa-Orbit Renderer ---
-const c = document.getElementById("kitCanvas");
-const x = c.getContext("2d");
-function KItriKIme(frame) {
-  const qi  = ghostCheck(frame);
-  const iqq = wraightLoop(frame);
-  const help = helpAuto(frame);
+// ------------------------------------------------------------
+// FRAME OBJEKT
+// ------------------------------------------------------------
+const frame = {
+    state: "ACTIVE",
+    pxCode: "?13/on3",
+    pqCode: "WRAIGHT",
+    help: "HELP_FAIL"
+};
 
-  console.log("ghostCheck:", qi);
-  console.log("wraightLoop:", iqq);
-  console.log("helpAuto:", help);
-  console.log("state:", frame.state);
-
-  const ready =
-    qi === "?13/on3" &&
-    iqq === "WRAIGHT" &&
-    help === "HELP_FAIL" &&
-    frame.state === "ACTIVE";
-
-  return ready ? 1 : 0;
-}
-
-let t = 0;
-
-function drawKIT() {
-    x.clearRect(0,0,500,500);
-
-    // --- Hexagon 1 (PX) ---
-    const R1 = 120;
-    x.strokeStyle = "#6cf";
-    x.lineWidth = 3;
-    x.beginPath();
-    for(let i=0;i<6;i++){
-        const a = t + i*Math.PI/3;
-        const px = 250 + Math.cos(a)*R1;
-        const py = 250 + Math.sin(a)*R1;
-        if(i===0) x.moveTo(px,py);
-        else x.lineTo(px,py);
-    }
-    x.closePath();
-    x.stroke();
-
-    // --- Hexagon 2 (PC) ---
-    const R2 = 160;
-    x.strokeStyle = "#0f0";
-    x.beginPath();
-    for(let i=0;i<6;i++){
-        const a = -t + i*Math.PI/3;
-        const px = 250 + Math.cos(a)*R2;
-        const py = 250 + Math.sin(a)*R2;
-        if(i===0) x.moveTo(px,py);
-        else x.lineTo(px,py);
-    }
-    x.closePath();
-    x.stroke();
-
-    // --- Orbit (GHOST) ---
-    x.strokeStyle = "#f90";
-    x.lineWidth = 2;
-    x.beginPath();
-    x.arc(250,250,200 + Math.sin(t*2)*10,0,Math.PI*2);
-    x.stroke();
-
-    // --- GHOST Blink ---
-    if(Math.sin(t*3) > 0.8){
-        x.fillStyle = "#f00";
-        x.fillRect(10,10,20,20);
-    }
-
-    t += 0.02;
-    requestAnimationFrame(drawKIT);
-}
-drawKIT();
-</script>
-
-</body>
-</html>
+// ------------------------------------------------------------
+// PX-MODUL
+// ------------------------------------------------------------
+function PX(frame) {
+    return {
+        axis: "PX",
