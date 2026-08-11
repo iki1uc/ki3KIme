@@ -48,10 +48,24 @@ READY    = 100%
 // --- KItriKIme Tri-Hexa-Orbit Renderer ---
 const c = document.getElementById("kitCanvas");
 const x = c.getContext("2d");
-console.log("ghostCheck:", ghostCheck(frame));
-console.log("wraightLoop:", wraightLoop(frame));
-console.log("helpAuto:", helpAuto(frame));
-console.log("state:", frame.state);
+function KItriKIme(frame) {
+  const qi  = ghostCheck(frame);
+  const iqq = wraightLoop(frame);
+  const help = helpAuto(frame);
+
+  console.log("ghostCheck:", qi);
+  console.log("wraightLoop:", iqq);
+  console.log("helpAuto:", help);
+  console.log("state:", frame.state);
+
+  const ready =
+    qi === "?13/on3" &&
+    iqq === "WRAIGHT" &&
+    help === "HELP_FAIL" &&
+    frame.state === "ACTIVE";
+
+  return ready ? 1 : 0;
+}
 
 let t = 0;
 
