@@ -1,13 +1,50 @@
-<script src="GROUP.UNIVERSAL.js"></script>
-<script>
-  // Jetzt ist GROUP global verfügbar
-  console.log(GROUP.generalMove());
+(function(global){
 
-  // Beispiel: Gruppe aus PX, PC, GHOST bilden
-  const meineGruppe = GROUP.bilden(['PX', 'PC', 'GHOST']);
-  console.log(meineGruppe);
+  const GROUP_UNIVERSAL = {
+    version:"4.1",
+    mode:"konsolidiert",
+    state:"ACTIVE",
 
-  // RUN3 Operator testen
-  const frame = { state: "ACTIVE", pxCode: "?13/on3", pqCode: "WRAIGHT" };
-  console.log(GROUP.run3(frame));
-</script>
+    matrix:{
+      PX:{label:"PX Ghost",type:"axis"},
+      PC:{label:"PC Scan",type:"axis"},
+      GHOST:{label:"GHOST Tri",type:"axis"},
+      ON3:{label:"RUN3 Operator",type:"operator"},
+      KIT:{label:"Kernel",type:"kernel"},
+      RAW:{label:"RAW Core",type:"raw"},
+      MOD:{label:"Module",type:"mod"},
+      TRI_HEXA:{label:"Tri-Hexa Orbit",type:"orbit"}
+    },
+
+    bilden(keys){
+      return keys.map(k => this.matrix[k]).filter(Boolean);
+    },
+
+    klären(key){
+      return this.matrix[key] || null;
+    },
+
+    run3(frame){
+      const ok =
+        frame.state === "ACTIVE" &&
+        frame.pxCode.startsWith("?13") &&
+        frame.pqCode.length > 3;
+
+      return {
+        status: ok ? "ok" : "blocked",
+        frame
+      };
+    },
+
+    generalMove(){
+      return {
+        move:"UNIVERSAL-MOVE",
+        groups:Object.keys(this.matrix),
+        timestamp:Date.now()
+      };
+    }
+  };
+
+  global.GROUP_UNIVERSAL = GROUP_UNIVERSAL;
+
+})(window);
