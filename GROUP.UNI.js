@@ -1,4 +1,4 @@
-// GROUP.UNIVERSAL.js
+// GROUP.UNI.js
 // Autonome Gruppen-Bildungs-Engine für ki3KIme · SHOW.live · iki1uc
 // Keine externen Links · Keine Sessions · Kein Drift · 100% autonom
 
