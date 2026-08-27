@@ -42,7 +42,7 @@ READY    = 100%
 <a href="./run.html">Pipeline</a>
 <a href="./kit.js">KItriKIme Kernel</a>
 
-<div class="controls" role="toolbar" aria-label="KI Controls">
+<div class="controls">
   <button id="btnPx">Trigger PX</button>
   <button id="btnOn3">Trigger ON3</button>
   <button id="btnPipeline">Trigger Pipeline</button>
@@ -65,7 +65,7 @@ READY    = 100%
 </section>
 
 <script>
-// KItriKIme Basis – sauber, vollständig, ohne Artefakte
+// FRAME – kompatibel mit pipeline2.js
 const frame = {
     state: "ACTIVE",
     pxCode: "?13/on3",
@@ -74,24 +74,18 @@ const frame = {
     KIT: 0
 };
 
-// Fehlende Funktionen – jetzt vollständig
-function ghostCheck(f){ return f.pqCode === "WRAIGHT" ? 1 : 0; }
-function wraightLoop(f){ return f.pxCode.includes("13") ? 1 : 0; }
-function helpAuto(f){ return f.help === "HELP_FAIL" ? 0 : 1; }
-
-// KItriKIme Kernel – stabil
+// KItriKIme – NICHT doppelt definieren → pipeline2.js Version nutzen
 function KItriKIme(f){
-    f.KIT = ghostCheck(f) + wraightLoop(f) + helpAuto(f);
+    const qi  = (ghostCheck(f) === "?13/on3");
+    const iqq = (wraightLoop(f) === "WRAIGHT");
+    const ready =
+      qi &&
+      iqq &&
+      helpAuto(f) === "HELP_FAIL" &&
+      f.state === "ACTIVE";
+    f.KIT = ready ? 1 : 0;
     log("KIT:", f.KIT);
     return f.KIT;
-}
-
-// Verbindung zu GROUP.UNIVERSAL.js
-function connectUniversal(){
-    const kit = KItriKIme(frame);
-    const uni = GROUP.kit(frame);
-    log("UNIVERSAL:", JSON.stringify(uni));
-    return { kit, uni };
 }
 
 // Log
@@ -112,9 +106,13 @@ setInterval(()=>{
 },200);
 
 // Buttons
-document.getElementById("btnPx").onclick = ()=>log("PX:", GROUP.klären("PX"));
-document.getElementById("btnOn3").onclick = ()=>log("ON3:", GROUP.klären("ON3"));
-document.getElementById("btnPipeline").onclick = ()=>connectUniversal();
+document.getElementById("btnPx").onclick = ()=>log("PX:", GROUP_UNIVERSAL.klären("PX"));
+document.getElementById("btnOn3").onclick = ()=>log("ON3:", GROUP_UNIVERSAL.klären("ON3"));
+document.getElementById("btnPipeline").onclick = ()=>{
+    const kit = KItriKIme(frame);
+    const run = GROUP_UNIVERSAL.run3(frame);
+    log("RUN3:", JSON.stringify(run));
+};
 document.getElementById("btnToggle").onclick = ()=>{
     frame.state = frame.state === "ACTIVE" ? "PASSIVE" : "ACTIVE";
     log("STATE:", frame.state);
@@ -125,8 +123,6 @@ document.getElementById("btnHelp").onclick = ()=>{
 };
 document.getElementById("btnClear").onclick = ()=>out.textContent = "Console output…";
 </script>
+
 </body>
 </html>
-
-
-
