@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>🌀 KItriKIme · PX/PC/GHOST · GROUP UNIVERSAL · REPAIRED</title>
+
+<style>
+body { background:#000; color:#0f0; font-family:Consolas; padding:20px; }
+h1, h2 { color:#6cf; }
+pre { background:#111; border:1px solid #333; padding:12px; max-height:160px; overflow:auto; }
+canvas { background:#111; border:1px solid #333; margin-top:20px; display:block; }
+a { color:#6cf; display:block; margin:6px 0; }
+section { margin-bottom:20px; }
+.controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+button { background:#6cf; color:#000; border:none; padding:8px 10px; border-radius:6px; cursor:pointer; font-weight:700; }
+button.small { padding:6px 8px; font-size:13px; }
+button.danger { background:#f44; color:#fff; }
+button.ghost { background:#6f6; color:#000; }
+.status { margin-top:10px; color:#9f9; font-size:14px; }
+.group-status { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:10px 0; }
+.group-card { background:#111; border:1px solid #333; padding:10px; text-align:center; border-radius:8px; }
+.group-card .name { font-size:18px; font-weight:bold; }
+.group-card .state { font-size:12px; margin-top:4px; }
+.group-card .state.on { color:#4f4; }
+.group-card .state.off { color:#f44; }
+.group-card .state.pulse { color:#ffd700; animation:pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+.log { background:#111; border:1px solid #333; padding:10px; max-height:120px; overflow:auto; font-size:11px; line-height:1.4; }
+.log .time { color:#666; }
+.log .ok { color:#4f4; }
+.log .warn { color:#ffd700; }
+.log .err { color:#f44; }
+.log .ghost { color:#6f6; }
+</style>
+</head>
+<body>
+
+<h1>🌀 KItriKIme · PX/PC/GHOST · GROUP UNIVERSAL</h1>
+
+<pre>
+CORE     = iki1uc
+VERSION  = 2.0
+CODE     = RAW‑KItriKIme
+AXES     = PX / PC / GHOST
+ENERGY   = 6e
+LAW      = 6d
+ORBIT    = 360°
+FORM     = Tri‑Hexa‑Orbit
+STATE    = ACTIVE
+READY    = 100%
+GROUP    = UNIVERSAL
+</pre>
+
+<!-- GROUP STATUS -->
+<div class="group-status">
+  <div class="group-card" id="cardPX">
+    <div class="name" style="color:#ff4444;">PX</div>
+    <div class="state on" id="statePX">● aktiv</div>
+    <div style="font-size:10px;color:#666;" id="pxDetail">Wert: 0</div>
+  </div>
+  <div class="group-card" id="cardPC">
+    <div class="name" style="color:#00ccff;">PC</div>
+    <div class="state on" id="statePC">● aktiv</div>
+    <div style="font-size:10px;color:#666;" id="pcDetail">Wert: 0</div>
+  </div>
+  <div class="group-card" id="cardGHOST">
+    <div class="name" style="color:#6f6;">GHOST</div>
+    <div class="state pulse" id="stateGHOST">◉ schwebend</div>
+    <div style="font-size:10px;color:#666;" id="ghostDetail">Wert: 0</div>
+  </div>
+</div>
+
+<section>
+<h2>KItriKIme‑Module</h2>
+<div class="controls">
+  <button id="btnPx">🌀 PX</button>
+  <button id="btnPc">🌀 PC</button>
+  <button id="btnGhost">👻 GHOST</button>
+  <button id="btnGroup">🔗 GROUP</button>
+  <button id="btnKernel">⚡ KERNEL</button>
+  <button id="btnToggle" class="small">⏸ Toggle</button>
+  <button id="btnHelp" class="small">❓ Help</button>
+  <button id="btnClear" class="small">⟲ Clear</button>
+</div>
+<div class="status" id="status">Status: GROUP UNIVERSAL · bereit</div>
+</section>
+
+<!-- CANVAS -->
+<section>
+<h2>KItriKIme · Tri‑Hexa‑Orbit Renderer</h2>
+<canvas id="kitCanvas" width="500" height="500"></canvas>
+</section>
+
+<!-- LOG -->
+<section>
+<h2>Output / Log</h2>
+<div class="log" id="log">[INIT] KItriKIme · GROUP UNIVERSAL · geladen</div>
+</section>
+
+<script>
+// ================================================================
+// KItriKIme · PX/PC/GHOST · GROUP UNIVERSAL · REPAIRED
+// ================================================================
+
+// ─── GROUP.UNIVERSAL ────────────────────────────────────────────
+const GROUP = {
+
+  // Gruppen-Mitglieder
+  members: {
+    PX: { active: true, value: 0, label: 'PX', color: '#ff4444' },
+    PC: { active: true, value: 0, label: 'PC', color: '#00ccff' },
+    GHOST: { active: true, value: 0, label: 'GHOST', color: '#6f6' }
+  },
+
+  // Gruppen-Zustand
+  state: 'IDLE',
+  kit: 0,
+
+  // ─── klären() – löst Gruppen-Fragen ──────────────────────────
+  klären(frage) {
+    const result = {
+      frage: frage,
+      zeit: Date.now(),
+      antwort: 'UNBEKANNT'
+    };
+
+    switch(frage.toUpperCase()) {
+      case 'PX':
+        result.antwort = this.members.PX.active ? 'AKTIV' : 'INAKTIV';
+        result.wert = this.members.PX.value;
+        break;
+      case 'PC':
+        result.antwort = this.members.PC.active ? 'AKTIV' : 'INAKTIV';
+        result.wert = this.members.PC.value;
+        break;
+      case 'GHOST':
+        result.antwort = this.members.GHOST.active ? 'SCHWEBEND' : 'GEFALLEN';
+        result.wert = this.members.GHOST.value;
+        break;
+      case 'GROUP':
+        result.antwort = this.state;
+        result.mitglieder = Object.keys(this.members);
+        break;
+      default:
+        result.antwort = 'UNBEKANNT';
+    }
+
+    return result;
+  },
+
+  // ─── kit() – KItriKIme-Integration ──────────────────────────
+  kit(frame) {
+    const px = this.members.PX.value;
+    const pc = this.members.PC.value;
+    const ghost = this.members.GHOST.value;
+
+    // Kit-Wert berechnen
+    const kitValue = (px + pc + ghost) / 3;
+    this.kit = kitValue;
+
+    // Gruppen-Status aktualisieren
+    this.state = kitValue > 5 ? 'AKTIV' : kitValue > 2 ? 'SCHWEBEND' : 'IDLE';
+
+    return {
+      kit: kitValue,
+      state: this.state,
+      px: px,
+      pc: pc,
+      ghost: ghost,
+      members: Object.keys(this.members).length,
+      ready: true
+    };
+  },
+
+  // ─── update() – Werte aktualisieren ──────────────────────────
+  update(pxVal, pcVal, ghostVal) {
+    if (pxVal !== undefined) this.members.PX.value = pxVal;
+    if (pcVal !== undefined) this.members.PC.value = pcVal;
+    if (ghostVal !== undefined) this.members.GHOST.value = ghostVal;
+
+    // Wenn GHOST > 7 → alle aktivieren
+    if (this.members.GHOST.value > 7) {
+      this.members.PX.active = true;
+      this.members.PC.active = true;
+      this.members.GHOST.active = true;
+    }
+
+    // Kit neu berechnen
+    const kit = this.kit({
+      px: this.members.PX.value,
+      pc: this.members.PC.value,
+      ghost: this.members.GHOST.value
+    });
+
+    return kit;
+  },
+
+  // ─── toggle() – Mitglied toggeln ─────────────────────────────
+  toggle(member) {
+    if (!this.members[member]) return { error: 'Unbekanntes Mitglied' };
+    this.members[member].active = !this.members[member].active;
+    return {
+      member: member,
+      active: this.members[member].active,
+      state: this.members[member].active ? 'AKTIV' : 'INAKTIV'
+    };
+  },
+
+  // ─── reset() ──────────────────────────────────────────────────
+  reset() {
+    this.members.PX.value = 0;
+    this.members.PC.value = 0;
+    this.members.GHOST.value = 0;
+    this.members.PX.active = true;
+    this.members.PC.active = true;
+    this.members.GHOST.active = true;
+    this.kit = 0;
+    this.state = 'IDLE';
+    return { status: 'ok', message: 'GROUP zurückgesetzt' };
+  }
+};
+
+// ─── FRAME ──────────────────────────────────────────────────────
+const frame = {
+  state: 'ACTIVE',
+  pxCode: '?13/on3',
+  pqCode: 'WRAIGHT',
+  help: 'HELP_FAIL',
+  KIT: 0
+};
+
+// ─── KItriKIme KERNEL ──────────────────────────────────────────
+function ghostCheck(f) {
+  return f.pqCode === 'WRAIGHT' ? 1 : 0;
+}
+
+function wraightLoop(f) {
+  return f.pxCode.includes('13') ? 1 : 0;
+}
+
+function helpAuto(f) {
+  return f.help === 'HELP_FAIL' ? 0 : 1;
+}
+
+function KItriKIme(f) {
+  f.KIT = ghostCheck(f) + wraightLoop(f) + helpAuto(f);
+  return f.KIT;
+}
+
+// ─── GROUP + KItriKIme CONNECT ─────────────────────────────────
+function connectUniversal() {
+  const kit = KItriKIme(frame);
+  const uni = GROUP.kit({
+    px: GROUP.members.PX.value,
+    pc: GROUP.members.PC.value,
+    ghost: GROUP.members.GHOST.value
+  });
+  return { kit, uni };
+}
+
+// ─── LOG ────────────────────────────────────────────────────────
+function log(msg, type = 'ok') {
+  const el = document.getElementById('log');
+  const time = new Date().toLocaleTimeString();
+  const cls = ['ok','warn','err','ghost'].includes(type) ? type : 'ok';
+  el.innerHTML += `<div><span class="time">[${time}]</span> <span class="${cls}">${msg}</span></div>`;
+  el.scrollTop = el.scrollHeight;
+  if (el.children.length > 50) el.removeChild(el.firstChild);
+}
+
+// ─── UI UPDATE ──────────────────────────────────────────────────
+function updateUI() {
+  const px = GROUP.members.PX;
+  const pc = GROUP.members.PC;
+  const ghost = GROUP.members.GHOST;
+
+  document.getElementById('pxDetail').textContent = `Wert: ${px.value.toFixed(2)} · ${px.active ? '●' : '○'}`;
+  document.getElementById('pcDetail').textContent = `Wert: ${pc.value.toFixed(2)} · ${pc.active ? '●' : '○'}`;
+  document.getElementById('ghostDetail').textContent = `Wert: ${ghost.value.toFixed(2)} · ${ghost.active ? '◉' : '○'}`;
+
+  document.getElementById('statePX').textContent = px.active ? '● aktiv' : '○ inaktiv';
+  document.getElementById('statePX').className = 'state ' + (px.active ? 'on' : 'off');
+  document.getElementById('statePC').textContent = pc.active ? '● aktiv' : '○ inaktiv';
+  document.getElementById('statePC').className = 'state ' + (pc.active ? 'on' : 'off');
+  document.getElementById('stateGHOST').textContent = ghost.active ? '◉ schwebend' : '○ gefallen';
+  document.getElementById('stateGHOST').className = 'state ' + (ghost.active ? 'pulse' : 'off');
+
+  document.getElementById('status').textContent = `Status: GROUP ${GROUP.state} · KIT ${GROUP.kit.toFixed(2)}`;
+}
+
+// ─── RENDERER ──────────────────────────────────────────────────
+const canvas = document.getElementById('kitCanvas');
+const ctx = canvas.getContext('2d');
+
+function render() {
+  ctx.clearRect(0, 0, 500, 500);
+
+  // Hintergrund
+  ctx.fillStyle = '#0a0a0f';
+  ctx.fillRect(0, 0, 500, 500);
+
+  const cx = 250, cy = 250;
+  const kit = GROUP.kit || 0;
+  const radius = 100 + kit * 5;
+
+  // Orbit Ringe
+  const colors = ['#ff4444', '#00ccff', '#6f6'];
+  const labels = ['PX', 'PC', 'GHOST'];
+  const values = [
+    GROUP.members.PX.value,
+    GROUP.members.PC.value,
+    GROUP.members.GHOST.value
+  ];
+
+  for (let i = 0; i < 3; i++) {
+    const angle = (i / 3) * Math.PI * 2 - Math.PI / 2;
+    const r = radius * (0.6 + i * 0.2);
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+
+    // Verbindungslinie
+    ctx.strokeStyle = colors[i] + '44';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Punkt
+    const active = [GROUP.members.PX.active, GROUP.members.PC.active, GROUP.members.GHOST.active][i];
+    const size = 8 + values[i] * 2;
+    ctx.fillStyle = active ? colors[i] + '88' : colors[i] + '22';
+    ctx.shadowColor = active ? colors[i] : 'transparent';
+    ctx.shadowBlur = active ? 20 : 0;
+    ctx.beginPath();
+    ctx.arc(x, y, Math.min(size, 20), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Label
+    ctx.fillStyle = active ? colors[i] : '#333';
+    ctx.font = '12px Consolas';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(labels[i], x, y - 12);
+    ctx.fillStyle = '#666';
+    ctx.font = '8px Consolas';
+    ctx.textBaseline = 'top';
+    ctx.fillText(values[i].toFixed(2), x, y + 6);
+  }
+
+  // Zentrum
+  ctx.fillStyle = '#ffd70044';
+  ctx.shadowColor = '#ffd700';
+  ctx.shadowBlur = 30;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ffd700';
+  ctx.font = 'bold 14px Consolas';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('◈', cx, cy);
+
+  ctx.fillStyle = '#666';
+  ctx.font = '9px Consolas';
+  ctx.textBaseline = 'top';
+  ctx.fillText(`KIT: ${kit.toFixed(2)} · ${GROUP.state}`, cx, cy + 18);
+
+  // GHOST-Effekt
+  if (GROUP.members.GHOST.active && GROUP.members.GHOST.value > 3) {
+    for (let i = 0; i < 5; i++) {
+      const a = Date.now() / 2000 + i * 1.2;
+      const gx = cx + Math.cos(a) * (radius * 0.3 + Math.sin(a) * 20);
+      const gy = cy + Math.sin(a) * (radius * 0.3 + Math.cos(a) * 20);
+      ctx.fillStyle = `rgba(102,255,102,${0.03 + Math.sin(a) * 0.01})`;
+      ctx.beginPath();
+      ctx.arc(gx, gy, 3 + Math.sin(a) * 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  requestAnimationFrame(render);
+}
+
+// ─── BUTTONS ────────────────────────────────────────────────────
+function randomValue() {
+  return 0.5 + Math.random() * 8;
+}
+
+document.getElementById('btnPx').onclick = function() {
+  const val = randomValue();
+  GROUP.members.PX.value = val;
+  log(`🌀 PX · Wert: ${val.toFixed(2)}`, 'ok');
+  updateUI();
+};
+
+document.getElementById('btnPc').onclick = function() {
+  const val = randomValue();
+  GROUP.members.PC.value = val;
+  log(`🌀 PC · Wert: ${val.toFixed(2)}`, 'ok');
+  updateUI();
+};
+
+document.getElementById('btnGhost').onclick = function() {
+  const val = randomValue();
+  GROUP.members.GHOST.value = val;
+  if (val > 7) {
+    GROUP.members.PX.active = true;
+    GROUP.members.PC.active = true;
+    GROUP.members.GHOST.active = true;
+    log(`👻 GHOST · ${val.toFixed(2)} · ALLE AKTIVIERT`, 'ghost');
+  } else {
+    log(`👻 GHOST · Wert: ${val.toFixed(2)}`, 'ghost');
+  }
+  updateUI();
+};
+
+document.getElementById('btnGroup').onclick = function() {
+  const result = GROUP.klären('GROUP');
+  log(`🔗 GROUP · ${result.antwort} · Mitglieder: ${result.mitglieder.join(', ')}`, 'ok');
+  updateUI();
+};
+
+document.getElementById('btnKernel').onclick = function() {
+  const kit = KItriKIme(frame);
+  const uni = GROUP.kit({
+    px: GROUP.members.PX.value,
+    pc: GROUP.members.PC.value,
+    ghost: GROUP.members.GHOST.value
+  });
+  log(`⚡ KERNEL · KIT: ${kit} · GROUP: ${uni.state} · Kit-Wert: ${uni.kit.toFixed(2)}`, 'ok');
+  updateUI();
+};
+
+document.getElementById('btnToggle').onclick = function() {
+  frame.state = frame.state === 'ACTIVE' ? 'PASSIVE' : 'ACTIVE';
+  log(`⏸ STATE: ${frame.state}`, 'warn');
+  updateUI();
+};
+
+document.getElementById('btnHelp').onclick = function() {
+  frame.help = frame.help === 'HELP_FAIL' ? 'HELP_OK' : 'HELP_FAIL';
+  log(`❓ HELP: ${frame.help}`, 'warn');
+  updateUI();
+};
+
+document.getElementById('btnClear').onclick = function() {
+  document.getElementById('log').innerHTML = '[CLEAR] Log gelöscht';
+};
+
+// ─── TASTATUR ──────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.key === '1') document.getElementById('btnPx').click();
+  if (e.key === '2') document.getElementById('btnPc').click();
+  if (e.key === '3') document.getElementById('btnGhost').click();
+  if (e.key === '4') document.getElementById('btnGroup').click();
+  if (e.key === '5') document.getElementById('btnKernel').click();
+  if (e.key === ' ') { e.preventDefault(); document.getElementById('btnToggle').click(); }
+  if (e.key === 'h' || e.key === 'H') document.getElementById('btnHelp').click();
+  if (e.key === 'x' || e.key === 'X') {
+    GROUP.reset();
+    log('⟲ RESET · Gruppe zurückgesetzt', 'warn');
+    updateUI();
+  }
+});
+
+// ─── INIT ──────────────────────────────────────────────────────
+log('🌀 KItriKIme · GROUP UNIVERSAL · repariert', 'ok');
+log('⌨️  1=PX  2=PC  3=GHOST  4=GROUP  5=KERNEL  space=Toggle  h=Help  x=Reset', 'ok');
+log('👻 GHOST > 7 aktiviert alle Mitglieder', 'ghost');
+
+// Initiale Werte
+GROUP.members.PX.value = 2.5;
+GROUP.members.PC.value = 3.2;
+GROUP.members.GHOST.value = 4.8;
+
+updateUI();
+render();
+
+console.log('🌀 KItriKIme · GROUP UNIVERSAL · REPAIRED');
+console.log('⌨️  1=PX  2=PC  3=GHOST  4=GROUP  5=KERNEL  space=Toggle  h=Help  x=Reset');
+</script>
+
+</body>
+</html>
