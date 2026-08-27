@@ -66,37 +66,128 @@ READY    = 100%
 
 <script>
 // ------------------------------------------------------------
-// FRAME OBJEKT (unverändert)
+// FRAME OBJEKT
 const frame = {
     state: "ACTIVE",
     pxCode: "?13/on3",
     pqCode: "WRAIGHT",
-    help: "HELP_FAIL"
+    help: "HELP_FAIL",
+    KIT: 0
 };
 
-// Beispiel PX‑Fabrik (deine echte PX(frame) bleibt gleich, wir rufen sie)
-function PX(frame) {
-    // Beispielausgabe — deine echte Implementierung bleibt bestehen
-    return { axis: "PX", ok: true, info: `pxCode=${frame.pxCode}` };
+// ------------------------------------------------------------
+// FEHLENDE FUNKTIONEN (jetzt definiert)
+function ghostCheck(frame){
+    return frame.pqCode === "WRAIGHT" ? 1 : 0;
 }
 
-// Platzhalterfunktionen für ON3 und Pipeline — ersetze / integriere echte Module
-function ON3(frame) {
-    return { result: "ON3_OK", details: { operator: frame.pqCode } };
+function wraightLoop(frame){
+    return frame.pxCode.includes("13") ? 1 : 0;
 }
-function runPipeline(frame) {
-    // Simuliere asynchrone Pipeline (z. B. lädt Module, rechnet, liefert Ergebnis)
-    return new Promise(resolve => {
-        setTimeout(() => resolve({ pipeline: "DONE", time: Date.now() }), 700);
+
+function helpAuto(frame){
+    return frame.help === "HELP_FAIL" ? 0 : 1;
+}
+
+// ------------------------------------------------------------
+// KItriKIme — jetzt funktionsfähig
+function KItriKIme(frame){
+    const g = ghostCheck(frame);
+    const w = wraightLoop(frame);
+    const h = helpAuto(frame);
+
+    // KIT‑Berechnung
+    frame.KIT = g + w + h;
+
+    log("KIT:", frame.KIT);
+
+    return frame.KIT;
+}
+
+// ------------------------------------------------------------
+// Beispiel PX‑Modul
+function PX(frame){
+    return { axis:"PX", ok:true, info:`pxCode=${frame.pxCode}` };
+}
+
+// Beispiel ON3‑Modul
+function ON3(frame){
+    return { result:"ON3_OK", details:{ operator:frame.pqCode }};
+}
+
+// Beispiel Pipeline
+function runPipeline(frame){
+    return new Promise(resolve=>{
+        setTimeout(()=>{
+            resolve({ pipeline:"DONE", time:Date.now() });
+        },700);
     });
 }
 
+// ------------------------------------------------------------
 // DOM Elemente
 const out = document.getElementById('out');
 const statusEl = document.getElementById('status');
 const canvas = document.getElementById('kitCanvas');
 const ctx = canvas.getContext('2d');
 
-// einfache Logging‑Hilfen
-function log(...args){ console.log(...args); out.textContent += '\\n' + args.join(' '); out.scrollTop = out.scrollHeight
-
+// Logging
+function log(...args){
+    console.log(...args);
+    out.textContent += "\n" + args.join(" ");
+    out.scrollTop = out.scrollHeight;
+}
+
+// ------------------------------------------------------------
+// BUTTONS
+document.getElementById("btnPx").onclick = ()=>{
+    const r = PX(frame);
+    log("PX:", JSON.stringify(r));
+};
+
+document.getElementById("btnOn3").onclick = ()=>{
+    const r = ON3(frame);
+    log("ON3:", JSON.stringify(r));
+};
+
+document.getElementById("btnPipeline").onclick = async ()=>{
+    const kit = KItriKIme(frame);
+
+    if(kit === 1){
+        log("KIT=1 → Pipeline2 redirect möglich");
+    } else {
+        log("KIT≠1 → Pipeline2 bleibt stehen");
+    }
+
+    const r = await runPipeline(frame);
+    log("Pipeline:", JSON.stringify(r));
+};
+
+document.getElementById("btnToggle").onclick = ()=>{
+    frame.state = frame.state === "ACTIVE" ? "PASSIVE" : "ACTIVE";
+    statusEl.textContent = "Status: " + frame.state;
+    log("State toggled:", frame.state);
+};
+
+document.getElementById("btnHelp").onclick = ()=>{
+    frame.help = frame.help === "HELP_FAIL" ? "HELP_OK" : "HELP_FAIL";
+    log("Help:", frame.help);
+};
+
+document.getElementById("btnClear").onclick = ()=>{
+    out.textContent = "Console output…";
+};
+
+// ------------------------------------------------------------
+// RENDERER
+function render(){
+    ctx.clearRect(0,0,500,500);
+    ctx.fillStyle = "#0f0";
+    ctx.beginPath();
+    ctx.arc(250,250,120 + frame.KIT*10,0,Math.PI*2);
+    ctx.stroke();
+}
+setInterval(render,200);
+</script>
+
+
