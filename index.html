@@ -2,487 +2,697 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>🌀 KItriKIme · PX/PC/GHOST · GROUP UNIVERSAL · REPAIRED</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌀 IMPERIUM GALACTUM · 756 ACHSEN · 6D · DEEP SPACE</title>
 
 <style>
-body { background:#000; color:#0f0; font-family:Consolas; padding:20px; }
-h1, h2 { color:#6cf; }
-pre { background:#111; border:1px solid #333; padding:12px; max-height:160px; overflow:auto; }
-canvas { background:#111; border:1px solid #333; margin-top:20px; display:block; }
-a { color:#6cf; display:block; margin:6px 0; }
-section { margin-bottom:20px; }
-.controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-button { background:#6cf; color:#000; border:none; padding:8px 10px; border-radius:6px; cursor:pointer; font-weight:700; }
-button.small { padding:6px 8px; font-size:13px; }
-button.danger { background:#f44; color:#fff; }
-button.ghost { background:#6f6; color:#000; }
-.status { margin-top:10px; color:#9f9; font-size:14px; }
-.group-status { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:10px 0; }
-.group-card { background:#111; border:1px solid #333; padding:10px; text-align:center; border-radius:8px; }
-.group-card .name { font-size:18px; font-weight:bold; }
-.group-card .state { font-size:12px; margin-top:4px; }
-.group-card .state.on { color:#4f4; }
-.group-card .state.off { color:#f44; }
-.group-card .state.pulse { color:#ffd700; animation:pulse 1s infinite; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  background: #0a0a0f;
+  color: #c8d0d0;
+  font-family: 'Consolas', monospace;
+  min-height: 100vh;
+  padding: 10px;
+  background: radial-gradient(ellipse at 50% 0%, #0a0a1a, #000000);
+}
+.container {
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  border-bottom: 2px solid rgba(255,215,0,0.15);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.header h1 {
+  font-size: 24px;
+  background: linear-gradient(90deg, #ffd700, #ff6600, #ff44ff, #00ccff, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 6px;
+  animation: glow 4s infinite;
+}
+@keyframes glow { 0%,100%{filter:drop-shadow(0 0 10px rgba(255,215,0,0.1))} 50%{filter:drop-shadow(0 0 40px rgba(255,215,0,0.3))} }
+.header .sub {
+  color: #3d5a70;
+  font-size: 9px;
+  letter-spacing: 4px;
+}
+.header .sub .ds9 { color: #ffd700; }
+.header .sub .achsen { color: #ff66ff; }
+.header .sub .6d { color: #00ff88; }
+
+/* STATUS BAR */
+.status-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px,1fr));
+  gap: 4px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 6px 10px;
+  margin: 6px 0;
+}
+.status-item {
+  text-align: center;
+  font-size: 7px;
+  padding: 2px 4px;
+}
+.status-item .val { font-size: 16px; font-weight: bold; }
+.status-item .val.on { color: #00ff88; }
+.status-item .val.off { color: #445555; }
+.status-item .val.pulse { color: #ffd700; animation: pulse 1s infinite; }
+.status-item .val.achse { color: #ff66ff; }
 @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
-.log { background:#111; border:1px solid #333; padding:10px; max-height:120px; overflow:auto; font-size:11px; line-height:1.4; }
-.log .time { color:#666; }
-.log .ok { color:#4f4; }
-.log .warn { color:#ffd700; }
-.log .err { color:#f44; }
-.log .ghost { color:#6f6; }
+
+/* MAIN GRID */
+.main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+  margin: 8px 0;
+}
+@media (max-width:900px){ .main-grid { grid-template-columns:1fr; } }
+
+/* GALAXY CANVAS */
+.galaxy {
+  background: rgba(10,14,20,0.3);
+  border: 1px solid rgba(100,200,255,0.03);
+  border-radius: 14px;
+  padding: 10px;
+}
+.galaxy h3 {
+  color: #ffd700;
+  font-size: 10px;
+  letter-spacing: 2px;
+  border-bottom: 1px solid rgba(255,215,0,0.06);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+#galaxyCanvas {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #0a0a0f;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.02);
+  display: block;
+}
+
+/* PANEL */
+.panel {
+  background: rgba(10,14,20,0.3);
+  border: 1px solid rgba(60,120,180,0.03);
+  border-radius: 14px;
+  padding: 10px;
+}
+.panel h3 {
+  color: #00ccff;
+  font-size: 10px;
+  letter-spacing: 2px;
+  border-bottom: 1px solid rgba(0,204,255,0.06);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+/* ORDNER GRID */
+.ordner-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 3px;
+  margin: 4px 0;
+}
+.ordner {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+  padding: 3px 6px;
+  text-align: center;
+  font-size: 7px;
+  border: 1px solid rgba(255,255,255,0.02);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ordner:hover { border-color: rgba(255,215,0,0.1); background: rgba(30,50,70,0.1); }
+.ordner .name { color: #8ab8e6; }
+.ordner .status { font-size: 5px; color: #445555; }
+.ordner .status.on { color: #00ff88; }
+.ordner .status.pulse { color: #ffd700; animation: pulse 1s infinite; }
+
+/* 6Y ENGINE */
+.engine-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  margin: 4px 0;
+}
+.engine-card {
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.02);
+}
+.engine-card .val { font-size: 18px; font-weight: bold; }
+.engine-card .lbl { font-size: 6px; color: #445555; text-transform: uppercase; }
+.engine-card.eng .val { color: #ffd700; }
+.engine-card.ind .val { color: #ff4444; }
+.engine-card.markt .val { color: #00ff88; }
+
+/* CONTROLS */
+.controls {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin: 6px 0;
+}
+.controls button {
+  background: rgba(20,35,45,0.3);
+  color: #8ab8e6;
+  border: 1px solid rgba(100,200,255,0.04);
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.controls button:hover {
+  background: rgba(40,80,100,0.2);
+  color: #b8e2ff;
+}
+.controls button.primary { border-color: rgba(255,215,0,0.2); color: #ffd700; }
+.controls button.primary:hover { background: rgba(255,215,0,0.05); }
+.controls button.ds9 { border-color: rgba(255,102,255,0.2); color: #ff66ff; }
+.controls button.ds9:hover { background: rgba(255,102,255,0.05); }
+.controls button.achse { border-color: rgba(0,204,255,0.2); color: #00ccff; }
+.controls button.achse:hover { background: rgba(0,204,255,0.05); }
+.controls button.danger { border-color: rgba(255,68,68,0.2); color: #f44; }
+.controls button.danger:hover { background: rgba(255,68,68,0.05); }
+
+/* LOG */
+.log {
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 7px;
+  color: #3d5a70;
+  max-height: 80px;
+  overflow-y: auto;
+  border: 1px solid rgba(100,200,255,0.01);
+  margin-top: 6px;
+  font-family: monospace;
+  line-height: 1.5;
+}
+.log .ok { color: #00ff88; }
+.log .flow { color: #ffaa00; }
+.log .whirl { color: #ff66ff; }
+.log .ds9 { color: #ffd700; }
+.log .achse { color: #00ccff; }
+.log .6d { color: #00ff88; }
+
+.footer {
+  text-align: center;
+  margin-top: 10px;
+  color: #1a1a2a;
+  font-size: 6px;
+  letter-spacing: 3px;
+}
+.footer .ds9 { color: #ffd700; }
+.footer .achse { color: #ff66ff; }
 </style>
 </head>
 <body>
 
-<h1>🌀 KItriKIme · PX/PC/GHOST · GROUP UNIVERSAL</h1>
+<div class="container">
 
-<pre>
-CORE     = iki1uc
-VERSION  = 2.0
-CODE     = RAW‑KItriKIme
-AXES     = PX / PC / GHOST
-ENERGY   = 6e
-LAW      = 6d
-ORBIT    = 360°
-FORM     = Tri‑Hexa‑Orbit
-STATE    = ACTIVE
-READY    = 100%
-GROUP    = UNIVERSAL
-</pre>
+<div class="header">
+  <h1>🌀 IMPERIUM GALACTUM · 756 ACHSEN</h1>
+  <div class="sub"><span class="ds9">★ DEEP SPACE NINE</span> · <span class="achsen">756 ACHSEN</span> · <span class="6d">6D</span> · 3→9→27→81→243→729</div>
+</div>
 
-<!-- GROUP STATUS -->
-<div class="group-status">
-  <div class="group-card" id="cardPX">
-    <div class="name" style="color:#ff4444;">PX</div>
-    <div class="state on" id="statePX">● aktiv</div>
-    <div style="font-size:10px;color:#666;" id="pxDetail">Wert: 0</div>
+<!-- STATUS BAR -->
+<div class="status-bar" id="statusBar">
+  <div class="status-item"><div class="val on" id="s6d">●</div>6D</div>
+  <div class="status-item"><div class="val achse" id="s756">756</div>ACHSEN</div>
+  <div class="status-item"><div class="val on" id="s180">●</div>180°</div>
+  <div class="status-item"><div class="val pulse" id="sds9">◉</div>DS9</div>
+  <div class="status-item"><div class="val on" id="sengine">●</div>ENGINE</div>
+  <div class="status-item"><div class="val on" id="smarkt">●</div>MARKT</div>
+  <div class="status-item"><div class="val on" id="sboerse">●</div>BOERSE</div>
+  <div class="status-item"><div class="val pulse" id="sorg">◉</div>ORG/REORG</div>
+</div>
+
+<div class="main-grid">
+
+  <!-- GALAXY -->
+  <div class="galaxy">
+    <h3>🌀 GALAXY · 756 ACHSEN · 6D · DEEP SPACE</h3>
+    <canvas id="galaxyCanvas"></canvas>
+    <div style="display:flex;gap:8px;margin-top:4px;font-size:7px;color:#445555;flex-wrap:wrap;">
+      <span style="color:#ffd700;">★ DS9</span>
+      <span style="color:#ff4444;">● A1</span>
+      <span style="color:#00ccff;">● A2</span>
+      <span style="color:#ff66ff;">● A3</span>
+      <span style="color:#00ff88;">◉ 6D</span>
+    </div>
   </div>
-  <div class="group-card" id="cardPC">
-    <div class="name" style="color:#00ccff;">PC</div>
-    <div class="state on" id="statePC">● aktiv</div>
-    <div style="font-size:10px;color:#666;" id="pcDetail">Wert: 0</div>
-  </div>
-  <div class="group-card" id="cardGHOST">
-    <div class="name" style="color:#6f6;">GHOST</div>
-    <div class="state pulse" id="stateGHOST">◉ schwebend</div>
-    <div style="font-size:10px;color:#666;" id="ghostDetail">Wert: 0</div>
+
+  <!-- PANEL -->
+  <div class="panel">
+    <h3>⚙️ IMPERIUM · KONTROLLE</h3>
+
+    <!-- ORDNER (Kalkulation) -->
+    <div style="font-size:7px;color:#445555;margin-bottom:2px;">📁 KALKULATION · 13 ORDNER</div>
+    <div class="ordner-grid" id="ordnerGrid">
+      <div class="ordner" data-ordner="3"><span class="name">3</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="6"><span class="name">6</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="9"><span class="name">9</span><span class="status pulse">◉</span></div>
+      <div class="ordner" data-ordner="API"><span class="name">API</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="RUN"><span class="name">RUN</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="boerse"><span class="name">BOERSE</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="industry"><span class="name">INDUSTRY</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="links"><span class="name">LINKS</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="markt"><span class="name">MARKT</span><span class="status pulse">◉</span></div>
+      <div class="ordner" data-ordner="rechts"><span class="name">RECHTS</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="rolle"><span class="name">ROLLE</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="use"><span class="name">USE</span><span class="status on">●</span></div>
+      <div class="ordner" data-ordner="weg"><span class="name">WEG</span><span class="status pulse">◉</span></div>
+    </div>
+
+    <!-- 6Y ENGINE -->
+    <div style="font-size:7px;color:#445555;margin:4px 0 2px 0;">⚡ 6Y · ENGINE · INDUSTRY · MARKT · BOERSE</div>
+    <div class="engine-grid">
+      <div class="engine-card eng"><div class="val" id="engineVal">0</div><div class="lbl">ENGINE</div></div>
+      <div class="engine-card ind"><div class="val" id="industryVal">0</div><div class="lbl">INDUSTRY</div></div>
+      <div class="engine-card markt"><div class="val" id="marktVal">0</div><div class="lbl">MARKT</div></div>
+    </div>
+
+    <!-- 3-6-9 ROOT -->
+    <div style="display:flex;gap:6px;justify-content:center;margin:4px 0;font-size:9px;">
+      <span style="color:#ffd700;">3</span>
+      <span style="color:#ff4444;">→</span>
+      <span style="color:#00ccff;">9</span>
+      <span style="color:#ff4444;">→</span>
+      <span style="color:#ff66ff;">27</span>
+      <span style="color:#ff4444;">→</span>
+      <span style="color:#00ff88;">81</span>
+      <span style="color:#ff4444;">→</span>
+      <span style="color:#ffd700;">243</span>
+      <span style="color:#ff4444;">→</span>
+      <span style="color:#ff66ff;">729</span>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+      <button class="primary" id="btn6d">🌀 6D STEP</button>
+      <button class="ds9" id="btnDs9">★ DS9</button>
+      <button class="achse" id="btnAchse">📐 756 ACHSEN</button>
+      <button id="btnOrg">🔄 ORG</button>
+      <button id="btnReorg">🔄 REORG</button>
+      <button id="btnSlide">📊 SLIDE</button>
+      <button id="btnWette">🎲 WETTE</button>
+      <button class="danger" id="btnReset">⟲ RESET</button>
+    </div>
+
+    <div class="log" id="log">[🌀] IMPERIUM GALACTUM · 756 ACHSEN · 6D · bereit</div>
   </div>
 </div>
 
-<section>
-<h2>KItriKIme‑Module</h2>
-<div class="controls">
-  <button id="btnPx">🌀 PX</button>
-  <button id="btnPc">🌀 PC</button>
-  <button id="btnGhost">👻 GHOST</button>
-  <button id="btnGroup">🔗 GROUP</button>
-  <button id="btnKernel">⚡ KERNEL</button>
-  <button id="btnToggle" class="small">⏸ Toggle</button>
-  <button id="btnHelp" class="small">❓ Help</button>
-  <button id="btnClear" class="small">⟲ Clear</button>
+<div class="footer"><span class="ds9">★</span> IMPERIUM GALACTUM · 756 ACHSEN · 6D · 3→9→27→81→243→729 · <span class="achse">wieimmer4u</span></div>
+
 </div>
-<div class="status" id="status">Status: GROUP UNIVERSAL · bereit</div>
-</section>
-
-<!-- CANVAS -->
-<section>
-<h2>KItriKIme · Tri‑Hexa‑Orbit Renderer</h2>
-<canvas id="kitCanvas" width="500" height="500"></canvas>
-</section>
-
-<!-- LOG -->
-<section>
-<h2>Output / Log</h2>
-<div class="log" id="log">[INIT] KItriKIme · GROUP UNIVERSAL · geladen</div>
-</section>
 
 <script>
 // ================================================================
-// KItriKIme · PX/PC/GHOST · GROUP UNIVERSAL · REPAIRED
+// IMPERIUM GALACTUM · 756 ACHSEN · 6D · DEEP SPACE
 // ================================================================
 
-// ─── GROUP.UNIVERSAL ────────────────────────────────────────────
-const GROUP = {
+// ─── STATE ──────────────────────────────────────────────────────
+const STATE = {
+  achsen: 756,
+  dims: [3, 9, 27, 81, 243, 729],
+  engine: 0,
+  industry: 0,
+  markt: 0,
+  boerse: 0,
+  cycle: 0,
+  org: false,
+  reorg: false,
+  slide: 0,
+  wette: 0,
+  ds9: false,
+  sixD: false,
+  ordner: {},
+  axiom1: 0,
+  axiom2: 0,
+  axiom3: 0
+};
 
-  // Gruppen-Mitglieder
-  members: {
-    PX: { active: true, value: 0, label: 'PX', color: '#ff4444' },
-    PC: { active: true, value: 0, label: 'PC', color: '#00ccff' },
-    GHOST: { active: true, value: 0, label: 'GHOST', color: '#6f6' }
-  },
+// ─── ORDNER ─────────────────────────────────────────────────────
+const ORDNER = ['3','6','9','API','RUN','boerse','industry','links','markt','rechts','rolle','use','weg'];
+ORDNER.forEach(o => STATE.ordner[o] = { active: true, value: 0 });
 
-  // Gruppen-Zustand
-  state: 'IDLE',
-  kit: 0,
+// ─── CANVAS ─────────────────────────────────────────────────────
+const canvas = document.getElementById('galaxyCanvas');
+const ctx = canvas.getContext('2d');
 
-  // ─── klären() – löst Gruppen-Fragen ──────────────────────────
-  klären(frage) {
-    const result = {
-      frage: frage,
-      zeit: Date.now(),
-      antwort: 'UNBEKANNT'
-    };
+function resizeCanvas() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width - 20 || 800;
+  canvas.height = canvas.width * 0.5625 || 450;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-    switch(frage.toUpperCase()) {
-      case 'PX':
-        result.antwort = this.members.PX.active ? 'AKTIV' : 'INAKTIV';
-        result.wert = this.members.PX.value;
-        break;
-      case 'PC':
-        result.antwort = this.members.PC.active ? 'AKTIV' : 'INAKTIV';
-        result.wert = this.members.PC.value;
-        break;
-      case 'GHOST':
-        result.antwort = this.members.GHOST.active ? 'SCHWEBEND' : 'GEFALLEN';
-        result.wert = this.members.GHOST.value;
-        break;
-      case 'GROUP':
-        result.antwort = this.state;
-        result.mitglieder = Object.keys(this.members);
-        break;
-      default:
-        result.antwort = 'UNBEKANNT';
-    }
+// ─── RENDER GALAXY ─────────────────────────────────────────────
+function renderGalaxy() {
+  const w = canvas.width, h = canvas.height;
+  const cx = w/2, cy = h/2;
+  const r = Math.min(w, h) * 0.35;
 
-    return result;
-  },
+  ctx.clearRect(0, 0, w, h);
 
-  // ─── kit() – KItriKIme-Integration ──────────────────────────
-  kit(frame) {
-    const px = this.members.PX.value;
-    const pc = this.members.PC.value;
-    const ghost = this.members.GHOST.value;
+  // Hintergrund
+  const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, w/2);
+  grad.addColorStop(0, '#0a0a1a');
+  grad.addColorStop(0.5, '#050510');
+  grad.addColorStop(1, '#000000');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
 
-    // Kit-Wert berechnen
-    const kitValue = (px + pc + ghost) / 3;
-    this.kit = kitValue;
-
-    // Gruppen-Status aktualisieren
-    this.state = kitValue > 5 ? 'AKTIV' : kitValue > 2 ? 'SCHWEBEND' : 'IDLE';
-
-    return {
-      kit: kitValue,
-      state: this.state,
-      px: px,
-      pc: pc,
-      ghost: ghost,
-      members: Object.keys(this.members).length,
-      ready: true
-    };
-  },
-
-  // ─── update() – Werte aktualisieren ──────────────────────────
-  update(pxVal, pcVal, ghostVal) {
-    if (pxVal !== undefined) this.members.PX.value = pxVal;
-    if (pcVal !== undefined) this.members.PC.value = pcVal;
-    if (ghostVal !== undefined) this.members.GHOST.value = ghostVal;
-
-    // Wenn GHOST > 7 → alle aktivieren
-    if (this.members.GHOST.value > 7) {
-      this.members.PX.active = true;
-      this.members.PC.active = true;
-      this.members.GHOST.active = true;
-    }
-
-    // Kit neu berechnen
-    const kit = this.kit({
-      px: this.members.PX.value,
-      pc: this.members.PC.value,
-      ghost: this.members.GHOST.value
-    });
-
-    return kit;
-  },
-
-  // ─── toggle() – Mitglied toggeln ─────────────────────────────
-  toggle(member) {
-    if (!this.members[member]) return { error: 'Unbekanntes Mitglied' };
-    this.members[member].active = !this.members[member].active;
-    return {
-      member: member,
-      active: this.members[member].active,
-      state: this.members[member].active ? 'AKTIV' : 'INAKTIV'
-    };
-  },
-
-  // ─── reset() ──────────────────────────────────────────────────
-  reset() {
-    this.members.PX.value = 0;
-    this.members.PC.value = 0;
-    this.members.GHOST.value = 0;
-    this.members.PX.active = true;
-    this.members.PC.active = true;
-    this.members.GHOST.active = true;
-    this.kit = 0;
-    this.state = 'IDLE';
-    return { status: 'ok', message: 'GROUP zurückgesetzt' };
+  // 756 Achsen (simuliert)
+  const axes = Math.min(756, 200 + STATE.achsen * 0.1);
+  for (let i = 0; i < axes; i++) {
+    const angle = (i / axes) * Math.PI * 2 + STATE.cycle * 0.001;
+    const dist = r * (0.3 + (i / axes) * 0.5);
+    const x = cx + Math.cos(angle) * dist;
+    const y = cy + Math.sin(angle) * dist;
+    const alpha = 0.02 + (i / axes) * 0.04;
+    ctx.fillStyle = `rgba(255,215,0,${alpha})`;
+    ctx.beginPath();
+    ctx.arc(x, y, 1 + (i / axes) * 2, 0, Math.PI * 2);
+    ctx.fill();
   }
-};
 
-// ─── FRAME ──────────────────────────────────────────────────────
-const frame = {
-  state: 'ACTIVE',
-  pxCode: '?13/on3',
-  pqCode: 'WRAIGHT',
-  help: 'HELP_FAIL',
-  KIT: 0
-};
-
-// ─── KItriKIme KERNEL ──────────────────────────────────────────
-function ghostCheck(f) {
-  return f.pqCode === 'WRAIGHT' ? 1 : 0;
-}
-
-function wraightLoop(f) {
-  return f.pxCode.includes('13') ? 1 : 0;
-}
-
-function helpAuto(f) {
-  return f.help === 'HELP_FAIL' ? 0 : 1;
-}
-
-function KItriKIme(f) {
-  f.KIT = ghostCheck(f) + wraightLoop(f) + helpAuto(f);
-  return f.KIT;
-}
-
-// ─── GROUP + KItriKIme CONNECT ─────────────────────────────────
-function connectUniversal() {
-  const kit = KItriKIme(frame);
-  const uni = GROUP.kit({
-    px: GROUP.members.PX.value,
-    pc: GROUP.members.PC.value,
-    ghost: GROUP.members.GHOST.value
+  // 3-9-27-81-243-729 Ringe
+  const dims = STATE.dims;
+  const colors = ['#ffd700','#ff4444','#00ccff','#ff66ff','#00ff88','#ff8800'];
+  dims.forEach((d, idx) => {
+    const rad = r * (0.15 + idx * 0.14);
+    ctx.strokeStyle = colors[idx] + '22';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 8]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = colors[idx] + '44';
+    ctx.font = '7px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(d, cx + rad * 0.8, cy - 4);
   });
-  return { kit, uni };
+
+  // 180° Linie
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([2, 6]);
+  ctx.beginPath();
+  ctx.moveTo(cx - r, cy);
+  ctx.lineTo(cx + r, cy);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#445555';
+  ctx.font = '6px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('180° · ERDE', cx, cy + 4);
+
+  // 6D Punkt
+  if (STATE.sixD) {
+    const angle = STATE.cycle * 0.02;
+    const x = cx + Math.cos(angle) * r * 0.6;
+    const y = cy + Math.sin(angle) * r * 0.6;
+    ctx.shadowColor = '#00ff88';
+    ctx.shadowBlur = 30;
+    ctx.fillStyle = '#00ff88';
+    ctx.beginPath();
+    ctx.arc(x, y, 4 + Math.sin(STATE.cycle * 0.05) * 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#00ff8844';
+    ctx.font = '6px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('6D', x, y - 6);
+  }
+
+  // DS9
+  if (STATE.ds9) {
+    ctx.shadowColor = '#ffd700';
+    ctx.shadowBlur = 40;
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 20px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('★', cx, cy - r * 0.5);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffd70044';
+    ctx.font = '6px monospace';
+    ctx.textBaseline = 'top';
+    ctx.fillText('DEEP SPACE NINE', cx, cy - r * 0.5 + 14);
+  }
+
+  // Engine/Industry/Markt Werte
+  ctx.fillStyle = '#445555';
+  ctx.font = '6px monospace';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(`ENGINE: ${STATE.engine}`, 10, h - 20);
+  ctx.fillText(`INDUSTRY: ${STATE.industry}`, 10, h - 12);
+  ctx.fillText(`MARKT: ${STATE.markt}`, 10, h - 4);
+
+  ctx.textAlign = 'right';
+  ctx.fillText(`756 ACHSEN`, w - 10, h - 12);
+  ctx.fillText(`ORG: ${STATE.org ? 'ON' : 'OFF'} · REORG: ${STATE.reorg ? 'ON' : 'OFF'}`, w - 10, h - 4);
+}
+
+// ─── 6D STEP ────────────────────────────────────────────────────
+function sixDStep() {
+  STATE.cycle++;
+  STATE.sixD = true;
+
+  // 3 → 9 → 27 → 81 → 243 → 729
+  const dimIndex = STATE.cycle % STATE.dims.length;
+  const dim = STATE.dims[dimIndex];
+
+  // Engine/Industry/Markt
+  STATE.engine = (STATE.engine + dim * 0.1) % 1000;
+  STATE.industry = (STATE.industry + dim * 0.15) % 1000;
+  STATE.markt = (STATE.markt + dim * 0.2) % 1000;
+  STATE.boerse = (STATE.boerse + dim * 0.05) % 1000;
+
+  // Axiome
+  STATE.axiom1 = (STATE.axiom1 + dim * 0.03) % 100;
+  STATE.axiom2 = (STATE.axiom2 + dim * 0.04) % 100;
+  STATE.axiom3 = (STATE.axiom3 + dim * 0.05) % 100;
+
+  // Ordner Werte
+  ORDNER.forEach((o, idx) => {
+    STATE.ordner[o].value = (STATE.ordner[o].value + dim * (0.01 + idx * 0.002)) % 100;
+  });
+
+  document.getElementById('engineVal').textContent = Math.round(STATE.engine);
+  document.getElementById('industryVal').textContent = Math.round(STATE.industry);
+  document.getElementById('marktVal').textContent = Math.round(STATE.markt);
+
+  log(`🌀 6D STEP · ${dim} · Engine: ${Math.round(STATE.engine)} · Industrie: ${Math.round(STATE.industry)} · Markt: ${Math.round(STATE.markt)}`, '6d');
+  updateUI();
+  renderGalaxy();
+}
+
+// ─── DS9 ────────────────────────────────────────────────────────
+function toggleDs9() {
+  STATE.ds9 = !STATE.ds9;
+  log(STATE.ds9 ? '★ DEEP SPACE NINE · aktiviert' : '★ DEEP SPACE NINE · deaktiviert', 'ds9');
+  updateUI();
+  renderGalaxy();
+}
+
+// ─── 756 ACHSEN ────────────────────────────────────────────────
+function toggleAchsen() {
+  STATE.achsen = STATE.achsen === 756 ? 756 + Math.round(Math.random() * 100) : 756;
+  log(`📐 ACHSEN · ${STATE.achsen}`, 'achse');
+  updateUI();
+  renderGalaxy();
+}
+
+// ─── ORG ────────────────────────────────────────────────────────
+function toggleOrg() {
+  STATE.org = !STATE.org;
+  if (STATE.org) {
+    // Sortiere Ordner
+    const sorted = ORDNER.sort((a,b) => STATE.ordner[a].value - STATE.ordner[b].value);
+    log(`🔄 ORG · sortiert · ${sorted.join(', ')}`, 'flow');
+  } else {
+    log('🔄 ORG · deaktiviert', 'flow');
+  }
+  updateUI();
+}
+
+// ─── REORG ──────────────────────────────────────────────────────
+function toggleReorg() {
+  STATE.reorg = !STATE.reorg;
+  if (STATE.reorg) {
+    // Mische Ordner
+    const shuffled = [...ORDNER];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    log(`🔄 REORG · gemischt · ${shuffled.join(', ')}`, 'whirl');
+  } else {
+    log('🔄 REORG · deaktiviert', 'flow');
+  }
+  updateUI();
+}
+
+// ─── SLIDE ──────────────────────────────────────────────────────
+function doSlide() {
+  STATE.slide++;
+  const value = Math.round(10 + Math.random() * 90);
+  log(`📊 SLIDE · ${value}% · ${STATE.slide}`, 'flow');
+  updateUI();
+}
+
+// ─── WETTE ──────────────────────────────────────────────────────
+function doWette() {
+  STATE.wette++;
+  const value = Math.round(Math.random() * 100);
+  const gewinn = value > 50 ? 'gewonnen 🎉' : 'verloren 😅';
+  log(`🎲 WETTE · ${value}% · ${gewinn} · ${STATE.wette}`, 'whirl');
+  updateUI();
+}
+
+// ─── RESET ──────────────────────────────────────────────────────
+function resetAll() {
+  STATE.cycle = 0;
+  STATE.engine = 0;
+  STATE.industry = 0;
+  STATE.markt = 0;
+  STATE.boerse = 0;
+  STATE.org = false;
+  STATE.reorg = false;
+  STATE.slide = 0;
+  STATE.wette = 0;
+  STATE.sixD = false;
+  STATE.ds9 = false;
+  STATE.achsen = 756;
+  STATE.axiom1 = 0;
+  STATE.axiom2 = 0;
+  STATE.axiom3 = 0;
+  ORDNER.forEach(o => STATE.ordner[o].value = 0);
+  document.getElementById('engineVal').textContent = '0';
+  document.getElementById('industryVal').textContent = '0';
+  document.getElementById('marktVal').textContent = '0';
+  log('⟲ RESET · Imperium zurückgesetzt', 'flow');
+  updateUI();
+  renderGalaxy();
+}
+
+// ─── UI UPDATE ──────────────────────────────────────────────────
+function updateUI() {
+  document.getElementById('s6d').textContent = STATE.sixD ? '●' : '○';
+  document.getElementById('s6d').className = 'val ' + (STATE.sixD ? 'on' : 'off');
+  document.getElementById('s756').textContent = STATE.achsen;
+  document.getElementById('sds9').textContent = STATE.ds9 ? '◉' : '●';
+  document.getElementById('sds9').className = 'val ' + (STATE.ds9 ? 'pulse' : 'off');
+  document.getElementById('sorg').textContent = STATE.org || STATE.reorg ? '◉' : '●';
+  document.getElementById('sorg').className = 'val ' + (STATE.org || STATE.reorg ? 'pulse' : 'off');
+  document.getElementById('sengine').textContent = STATE.engine > 0 ? '●' : '○';
+  document.getElementById('smarkt').textContent = STATE.markt > 0 ? '●' : '○';
+  document.getElementById('sboerse').textContent = STATE.boerse > 0 ? '●' : '○';
+
+  // Ordner Status
+  document.querySelectorAll('.ordner').forEach(el => {
+    const name = el.dataset.ordner;
+    const val = STATE.ordner[name]?.value || 0;
+    const status = el.querySelector('.status');
+    if (val > 50) {
+      status.textContent = '◉';
+      status.className = 'status pulse';
+    } else if (val > 20) {
+      status.textContent = '●';
+      status.className = 'status on';
+    } else {
+      status.textContent = '○';
+      status.className = 'status';
+    }
+  });
 }
 
 // ─── LOG ────────────────────────────────────────────────────────
 function log(msg, type = 'ok') {
   const el = document.getElementById('log');
   const time = new Date().toLocaleTimeString();
-  const cls = ['ok','warn','err','ghost'].includes(type) ? type : 'ok';
-  el.innerHTML += `<div><span class="time">[${time}]</span> <span class="${cls}">${msg}</span></div>`;
+  const cls = ['ok','flow','whirl','ds9','achse','6d'].includes(type) ? type : 'ok';
+  el.innerHTML += `<div>[${time}] <span class="${cls}">${msg}</span></div>`;
   el.scrollTop = el.scrollHeight;
-  if (el.children.length > 50) el.removeChild(el.firstChild);
+  if (el.children.length > 30) el.removeChild(el.firstChild);
 }
-
-// ─── UI UPDATE ──────────────────────────────────────────────────
-function updateUI() {
-  const px = GROUP.members.PX;
-  const pc = GROUP.members.PC;
-  const ghost = GROUP.members.GHOST;
-
-  document.getElementById('pxDetail').textContent = `Wert: ${px.value.toFixed(2)} · ${px.active ? '●' : '○'}`;
-  document.getElementById('pcDetail').textContent = `Wert: ${pc.value.toFixed(2)} · ${pc.active ? '●' : '○'}`;
-  document.getElementById('ghostDetail').textContent = `Wert: ${ghost.value.toFixed(2)} · ${ghost.active ? '◉' : '○'}`;
-
-  document.getElementById('statePX').textContent = px.active ? '● aktiv' : '○ inaktiv';
-  document.getElementById('statePX').className = 'state ' + (px.active ? 'on' : 'off');
-  document.getElementById('statePC').textContent = pc.active ? '● aktiv' : '○ inaktiv';
-  document.getElementById('statePC').className = 'state ' + (pc.active ? 'on' : 'off');
-  document.getElementById('stateGHOST').textContent = ghost.active ? '◉ schwebend' : '○ gefallen';
-  document.getElementById('stateGHOST').className = 'state ' + (ghost.active ? 'pulse' : 'off');
-
-  document.getElementById('status').textContent = `Status: GROUP ${GROUP.state} · KIT ${GROUP.kit.toFixed(2)}`;
-}
-
-// ─── RENDERER ──────────────────────────────────────────────────
-const canvas = document.getElementById('kitCanvas');
-const ctx = canvas.getContext('2d');
-
-function render() {
-  ctx.clearRect(0, 0, 500, 500);
-
-  // Hintergrund
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, 500, 500);
-
-  const cx = 250, cy = 250;
-  const kit = GROUP.kit || 0;
-  const radius = 100 + kit * 5;
-
-  // Orbit Ringe
-  const colors = ['#ff4444', '#00ccff', '#6f6'];
-  const labels = ['PX', 'PC', 'GHOST'];
-  const values = [
-    GROUP.members.PX.value,
-    GROUP.members.PC.value,
-    GROUP.members.GHOST.value
-  ];
-
-  for (let i = 0; i < 3; i++) {
-    const angle = (i / 3) * Math.PI * 2 - Math.PI / 2;
-    const r = radius * (0.6 + i * 0.2);
-    const x = cx + Math.cos(angle) * r;
-    const y = cy + Math.sin(angle) * r;
-
-    // Verbindungslinie
-    ctx.strokeStyle = colors[i] + '44';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Punkt
-    const active = [GROUP.members.PX.active, GROUP.members.PC.active, GROUP.members.GHOST.active][i];
-    const size = 8 + values[i] * 2;
-    ctx.fillStyle = active ? colors[i] + '88' : colors[i] + '22';
-    ctx.shadowColor = active ? colors[i] : 'transparent';
-    ctx.shadowBlur = active ? 20 : 0;
-    ctx.beginPath();
-    ctx.arc(x, y, Math.min(size, 20), 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // Label
-    ctx.fillStyle = active ? colors[i] : '#333';
-    ctx.font = '12px Consolas';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(labels[i], x, y - 12);
-    ctx.fillStyle = '#666';
-    ctx.font = '8px Consolas';
-    ctx.textBaseline = 'top';
-    ctx.fillText(values[i].toFixed(2), x, y + 6);
-  }
-
-  // Zentrum
-  ctx.fillStyle = '#ffd70044';
-  ctx.shadowColor = '#ffd700';
-  ctx.shadowBlur = 30;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 12, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = '#ffd700';
-  ctx.font = 'bold 14px Consolas';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('◈', cx, cy);
-
-  ctx.fillStyle = '#666';
-  ctx.font = '9px Consolas';
-  ctx.textBaseline = 'top';
-  ctx.fillText(`KIT: ${kit.toFixed(2)} · ${GROUP.state}`, cx, cy + 18);
-
-  // GHOST-Effekt
-  if (GROUP.members.GHOST.active && GROUP.members.GHOST.value > 3) {
-    for (let i = 0; i < 5; i++) {
-      const a = Date.now() / 2000 + i * 1.2;
-      const gx = cx + Math.cos(a) * (radius * 0.3 + Math.sin(a) * 20);
-      const gy = cy + Math.sin(a) * (radius * 0.3 + Math.cos(a) * 20);
-      ctx.fillStyle = `rgba(102,255,102,${0.03 + Math.sin(a) * 0.01})`;
-      ctx.beginPath();
-      ctx.arc(gx, gy, 3 + Math.sin(a) * 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  requestAnimationFrame(render);
-}
-
-// ─── BUTTONS ────────────────────────────────────────────────────
-function randomValue() {
-  return 0.5 + Math.random() * 8;
-}
-
-document.getElementById('btnPx').onclick = function() {
-  const val = randomValue();
-  GROUP.members.PX.value = val;
-  log(`🌀 PX · Wert: ${val.toFixed(2)}`, 'ok');
-  updateUI();
-};
-
-document.getElementById('btnPc').onclick = function() {
-  const val = randomValue();
-  GROUP.members.PC.value = val;
-  log(`🌀 PC · Wert: ${val.toFixed(2)}`, 'ok');
-  updateUI();
-};
-
-document.getElementById('btnGhost').onclick = function() {
-  const val = randomValue();
-  GROUP.members.GHOST.value = val;
-  if (val > 7) {
-    GROUP.members.PX.active = true;
-    GROUP.members.PC.active = true;
-    GROUP.members.GHOST.active = true;
-    log(`👻 GHOST · ${val.toFixed(2)} · ALLE AKTIVIERT`, 'ghost');
-  } else {
-    log(`👻 GHOST · Wert: ${val.toFixed(2)}`, 'ghost');
-  }
-  updateUI();
-};
-
-document.getElementById('btnGroup').onclick = function() {
-  const result = GROUP.klären('GROUP');
-  log(`🔗 GROUP · ${result.antwort} · Mitglieder: ${result.mitglieder.join(', ')}`, 'ok');
-  updateUI();
-};
-
-document.getElementById('btnKernel').onclick = function() {
-  const kit = KItriKIme(frame);
-  const uni = GROUP.kit({
-    px: GROUP.members.PX.value,
-    pc: GROUP.members.PC.value,
-    ghost: GROUP.members.GHOST.value
-  });
-  log(`⚡ KERNEL · KIT: ${kit} · GROUP: ${uni.state} · Kit-Wert: ${uni.kit.toFixed(2)}`, 'ok');
-  updateUI();
-};
-
-document.getElementById('btnToggle').onclick = function() {
-  frame.state = frame.state === 'ACTIVE' ? 'PASSIVE' : 'ACTIVE';
-  log(`⏸ STATE: ${frame.state}`, 'warn');
-  updateUI();
-};
-
-document.getElementById('btnHelp').onclick = function() {
-  frame.help = frame.help === 'HELP_FAIL' ? 'HELP_OK' : 'HELP_FAIL';
-  log(`❓ HELP: ${frame.help}`, 'warn');
-  updateUI();
-};
-
-document.getElementById('btnClear').onclick = function() {
-  document.getElementById('log').innerHTML = '[CLEAR] Log gelöscht';
-};
 
 // ─── TASTATUR ──────────────────────────────────────────────────
 document.addEventListener('keydown', (e) => {
-  if (e.key === '1') document.getElementById('btnPx').click();
-  if (e.key === '2') document.getElementById('btnPc').click();
-  if (e.key === '3') document.getElementById('btnGhost').click();
-  if (e.key === '4') document.getElementById('btnGroup').click();
-  if (e.key === '5') document.getElementById('btnKernel').click();
-  if (e.key === ' ') { e.preventDefault(); document.getElementById('btnToggle').click(); }
-  if (e.key === 'h' || e.key === 'H') document.getElementById('btnHelp').click();
-  if (e.key === 'x' || e.key === 'X') {
-    GROUP.reset();
-    log('⟲ RESET · Gruppe zurückgesetzt', 'warn');
-    updateUI();
-  }
+  if (e.key === ' ') { e.preventDefault(); sixDStep(); }
+  if (e.key === 'd' || e.key === 'D') toggleDs9();
+  if (e.key === 'a' || e.key === 'A') toggleAchsen();
+  if (e.key === 'o' || e.key === 'O') toggleOrg();
+  if (e.key === 'r' || e.key === 'R') toggleReorg();
+  if (e.key === 's' || e.key === 'S') doSlide();
+  if (e.key === 'w' || e.key === 'W') doWette();
+  if (e.key === 'x' || e.key === 'X') resetAll();
+});
+
+// ─── BUTTONS ────────────────────────────────────────────────────
+document.getElementById('btn6d').addEventListener('click', sixDStep);
+document.getElementById('btnDs9').addEventListener('click', toggleDs9);
+document.getElementById('btnAchse').addEventListener('click', toggleAchsen);
+document.getElementById('btnOrg').addEventListener('click', toggleOrg);
+document.getElementById('btnReorg').addEventListener('click', toggleReorg);
+document.getElementById('btnSlide').addEventListener('click', doSlide);
+document.getElementById('btnWette').addEventListener('click', doWette);
+document.getElementById('btnReset').addEventListener('click', resetAll);
+
+// ─── ORDNER KLICKS ─────────────────────────────────────────────
+document.querySelectorAll('.ordner').forEach(el => {
+  el.addEventListener('click', () => {
+    const name = el.dataset.ordner;
+    const val = STATE.ordner[name];
+    if (val) {
+      val.value = (val.value + 10) % 100;
+      log(`📁 ${name} · ${Math.round(val.value)}%`, 'flow');
+      updateUI();
+      renderGalaxy();
+    }
+  });
 });
 
 // ─── INIT ──────────────────────────────────────────────────────
-log('🌀 KItriKIme · GROUP UNIVERSAL · repariert', 'ok');
-log('⌨️  1=PX  2=PC  3=GHOST  4=GROUP  5=KERNEL  space=Toggle  h=Help  x=Reset', 'ok');
-log('👻 GHOST > 7 aktiviert alle Mitglieder', 'ghost');
-
-// Initiale Werte
-GROUP.members.PX.value = 2.5;
-GROUP.members.PC.value = 3.2;
-GROUP.members.GHOST.value = 4.8;
-
+log('🌀 IMPERIUM GALACTUM · 756 ACHSEN · 6D · geladen', 'ds9');
+log('⌨️  space=6D  d=DS9  a=ACHSEN  o=ORG  r=REORG  s=SLIDE  w=WETTE  x=RESET', 'flow');
+log('📐 3→9→27→81→243→729 · Deep Space Nine', 'achse');
 updateUI();
-render();
+renderGalaxy();
 
-console.log('🌀 KItriKIme · GROUP UNIVERSAL · REPAIRED');
-console.log('⌨️  1=PX  2=PC  3=GHOST  4=GROUP  5=KERNEL  space=Toggle  h=Help  x=Reset');
+// Automatische 6D-Animation
+setInterval(() => {
+  if (STATE.sixD) {
+    STATE.cycle++;
+    renderGalaxy();
+  }
+}, 100);
 </script>
 
 </body>
