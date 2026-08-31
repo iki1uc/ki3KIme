@@ -1,11 +1,14 @@
 // ─── pipeline2.js · Werkzeug-Modus ───────────────────────────────
-// Dieses Modul ist KEINE echte Pipeline.
-// Es dient nur als Werkzeug, um ORG / REORG / NCsync / KItriKIme
-// aus dem Imperium-Kernel heraus aufzurufen.
+// KEINE echte Pipeline. Nur Werkzeug für:
+// ORG / REORG / NCsync / KItriKIme / Gruppen / KIT
 
 import { KIT } from './kit.js';
 
-// ─── KItriKIme Check ─────────────────────────────────────────────
+let PIPE_COUNT = 0;        // zählt die Ausführungen
+let PIPE_CACHE = [];       // sammelt NCsync-Frames
+
+
+// ─── KItriKIme Check (aus deinem (2)) ───────────────────────────
 export function checkKernel(frame) {
   const qi  = (ghostCheck(frame) === "?13/on3");
   const iqq = (wraightLoop(frame) === "WRAIGHT");
@@ -19,39 +22,88 @@ export function checkKernel(frame) {
   return ready ? 1 : 0;
 }
 
-// ─── ORG Wrapper (Werkzeug) ──────────────────────────────────────
+
+// ─── ORG Wrapper ────────────────────────────────────────────────
 export function doOrg(state) {
-  toggleOrg();               // nutzt Imperium-Kernel
-  return GROUP.NCsync(state); // gibt NCsync zurück
+  toggleOrg();               
+  return collectNC(state);
 }
 
-// ─── REORG Wrapper (Werkzeug) ─────────────────────────────────────
+
+// ─── REORG Wrapper ──────────────────────────────────────────────
 export function doReorg(state) {
-  toggleReorg();             // nutzt Imperium-Kernel
-  return GROUP.NCsync(state); // gibt NCsync zurück
+  toggleReorg();             
+  return collectNC(state);
 }
 
-// ─── reFINAL (ORG + REORG Auto-Decision) ─────────────────────────
+
+// ─── reFINAL (Auto-Entscheidung) ────────────────────────────────
 export function reFinal(state) {
   if (state.org) {
     toggleOrg();
   } else if (state.reorg) {
     toggleReorg();
   }
-  return GROUP.NCsync(state);
+  return collectNC(state);
 }
 
-// ─── Gruppen-Tool ────────────────────────────────────────────────
+
+// ─── Gruppen-Tool ───────────────────────────────────────────────
 export function doConnect() {
   connectGruppen();
   return document.getElementById('gruppenStatus').textContent;
 }
 
-// ─── KIT-Tool ─────────────────────────────────────────────────────
+
+// ─── KIT-Tool ───────────────────────────────────────────────────
 export function kitInfo() {
   return {
     KIT,
     ULTRA: KIT.ULTRA,
     RESPO: KIT.RESPO
   };
+}
+
+
+// ─── NCsync Sammel-Mechanismus ───────────────────────────────────
+// 3× → Silent-Auswertung
+// 4× → pipeline3 Trigger
+// 6× → Cache leeren
+function collectNC(state) {
+  PIPE_COUNT++;
+
+  const frame = GROUP.NCsync(state);
+  PIPE_CACHE.push(frame);
+
+  // 3×: Auswertung ohne Output
+  if (PIPE_COUNT === 3) {
+    evaluateSilent(PIPE_CACHE);
+  }
+
+  // 4×: pipeline3 Trigger
+  if (PIPE_COUNT === 4) {
+    triggerPipeline3(PIPE_CACHE);
+  }
+
+  // 6×: Cache leeren
+  if (PIPE_COUNT === 6) {
+    PIPE_CACHE = [];
+    PIPE_COUNT = 0;
+  }
+
+  return frame;
+}
+
+
+// ─── Silent-Auswertung (keine Ausgabe) ───────────────────────────
+function evaluateSilent(cache) {
+  cache.forEach(f => {
+    f.valid = f.axes > 100 && (f.org || f.reorg);
+  });
+}
+
+
+// ─── pipeline3 Trigger (Werkzeug) ────────────────────────────────
+function triggerPipeline3(cache) {
+  cache.pipeline3 = true;
 }
