@@ -13,3 +13,5 @@ function KItriKIme(frame) {
 
 const KIT = KItriKIme(frame);
 console.log("KItriKIme:", KIT);
+import { KIT } from './kit.js';
+// und dann z.B. KIT.ULTRA, KIT.RESPO etc. in engine nutzen
