@@ -92,14 +92,9 @@ const GRUPPEN = {
   industrie:['industry','markt','links'],
   system:['rechts','rolle','use','weg']
 };
-🚀 Installation
-Keine Dependencies.
-Einfach Repository klonen:
 
-Code
-git clone https://github.com/iki1uc/ki3KIme
-Browser öffnen → index.html.
-   
+
+
 🧩 Lizenz
 LICENSE-CLOSED.txt
 ╔═══════════════════════════════════════════════════════════════╗
