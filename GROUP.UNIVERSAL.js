@@ -46,7 +46,13 @@
       RING:  { label: "RING · Connect",    type: "connect", status: "ready" },
       NOAH_LEVEL: { label: "NOAH · Level 14", type: "admin", status: "ready" }
     },
+<!-- NEU: Gruppen-Status -->
+<div class="status-bar" id="gruppenStatus" style="font-size:8px;color:#ffd700;text-align:center;padding:4px;">
+  🟢 basis (3/3) 🟡 kern (2/3) 🔴 industrie (0/3) 🟢 system (4/4)
+</div>
 
+<!-- NEU: Connect-Button -->
+<button class="primary" id="btnConnect">🔗 CONNECT GRUPPEN</button>
     // ─── GRUPPEN BILDEN ────────────────────────────────────────────
     bilden(keys) {
       const result = { group: {}, status: "ok", message: "Gruppe gebildet" };
