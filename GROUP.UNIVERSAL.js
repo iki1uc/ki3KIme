@@ -185,3 +185,27 @@
   console.log("⚡ General Move:", GROUP.generalMove());
 
 })(window);
+(function(global){
+
+  const GROUP = { ... };
+
+  // ─── KItriKIme BLOCK HIER EINSETZEN ───────────────────────────
+
+  function ghostCheck(frame){ return frame.pxCode; }
+  function wraightLoop(frame){ return frame.pqCode; }
+  function helpAuto(frame){ return frame.help; }
+
+  function KItriKIme(frame){
+    const qi  = (ghostCheck(frame) === "?13/on3");
+    const iqq = (wraightLoop(frame) === "WRAIGHT");
+    const ready =
+      qi &&
+      iqq &&
+      helpAuto(frame) === "HELP_FAIL" &&
+      frame.state === "ACTIVE";
+    return ready ? 1 : 0;
+  }
+
+  global.KItriKIme = KItriKIme;
+
+})(window);
