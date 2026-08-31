@@ -195,43 +195,68 @@ function toggleDs9() {
   renderGalaxy();
 }
 
-// ─── 756 ACHSEN ────────────────────────────────────────────────
+// ─── 756 ACHSEN · FINAL NC ───────────────────────────────────────
 function toggleAchsen() {
-  STATE.achsen = STATE.achsen === 756 ? 756 + Math.round(Math.random() * 100) : 756;
+  const raw = STATE.achsen;          // aktueller Achsenwert
+  const dyn = raw * 0.42;            // dynamische Verstärkung
+  const limit = Math.min(1500, dyn); // Performance‑Limit
+  const smooth = Math.floor(limit);  // Glätten
+
+  STATE.achsen = smooth;
+
   log(`📐 ACHSEN · ${STATE.achsen}`, 'achse');
   updateUI();
   renderGalaxy();
 }
 
-// ─── ORG ────────────────────────────────────────────────────────
+
 function toggleOrg() {
   STATE.org = !STATE.org;
+
   if (STATE.org) {
-    // Sortiere Ordner
-    const sorted = ORDNER.sort((a,b) => STATE.ordner[a].value - STATE.ordner[b].value);
+    STATE.reorg = false;
+    STATE.ordnerShuffled = null;
+
+    const sorted = [...ORDNER].sort((a, b) =>
+      STATE.ordner[a].value - STATE.ordner[b].value
+    );
+
+    STATE.ordnerSorted = sorted;
     log(`🔄 ORG · sortiert · ${sorted.join(', ')}`, 'flow');
+
   } else {
+    STATE.ordnerSorted = null;
     log('🔄 ORG · deaktiviert', 'flow');
   }
+
   updateUI();
 }
 
-// ─── REORG ──────────────────────────────────────────────────────
+
 function toggleReorg() {
   STATE.reorg = !STATE.reorg;
+
   if (STATE.reorg) {
-    // Mische Ordner
+    STATE.org = false;
+    STATE.ordnerSorted = null;
+
     const shuffled = [...ORDNER];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
+
+    STATE.ordnerShuffled = shuffled;
     log(`🔄 REORG · gemischt · ${shuffled.join(', ')}`, 'whirl');
+
   } else {
+    STATE.ordnerShuffled = null;
     log('🔄 REORG · deaktiviert', 'flow');
   }
+
   updateUI();
 }
+
 
 // ─── SLIDE ──────────────────────────────────────────────────────
 function doSlide() {
@@ -241,130 +266,86 @@ function doSlide() {
   updateUI();
 }
 
-// ─── WETTE ──────────────────────────────────────────────────────
+// ─── WETTE · FINAL NC ───────────────────────────────────────────
 function doWette() {
   STATE.wette++;
+
   const value = Math.round(Math.random() * 100);
   const gewinn = value > 50 ? 'gewonnen 🎉' : 'verloren 😅';
+
   log(`🎲 WETTE · ${value}% · ${gewinn} · ${STATE.wette}`, 'whirl');
+
   updateUI();
 }
 
-// ─── RESET ──────────────────────────────────────────────────────
+
+// ─── RESET · FINAL NC ───────────────────────────────────────────
 function resetAll() {
-  STATE.cycle = 0;
-  STATE.engine = 0;
-  STATE.industry = 0;
-  STATE.markt = 0;
-  STATE.boerse = 0;
-  STATE.org = false;
-  STATE.reorg = false;
-  STATE.slide = 0;
-  STATE.wette = 0;
-  STATE.sixD = false;
-  STATE.ds9 = false;
-  STATE.achsen = 756;
-  STATE.axiom1 = 0;
-  STATE.axiom2 = 0;
-  STATE.axiom3 = 0;
+  Object.assign(STATE, {
+    cycle: 0,
+    engine: 0,
+    industry: 0,
+    markt: 0,
+    boerse: 0,
+    org: false,
+    reorg: false,
+    slide: 0,
+    wette: 0,
+    sixD: false,
+    ds9: false,
+    achsen: 756,
+    axiom1: 0,
+    axiom2: 0,
+    axiom3: 0
+  });
+
   ORDNER.forEach(o => STATE.ordner[o].value = 0);
-  document.getElementById('engineVal').textContent = '0';
-  document.getElementById('industryVal').textContent = '0';
-  document.getElementById('marktVal').textContent = '0';
+
+  ['engineVal','industryVal','marktVal'].forEach(id => {
+    document.getElementById(id).textContent = '0';
+  });
+
   log('⟲ RESET · Imperium zurückgesetzt', 'flow');
+
   updateUI();
   renderGalaxy();
 }
 
-// ─── UI UPDATE ──────────────────────────────────────────────────
-function updateUI() {
-  document.getElementById('s6d').textContent = STATE.sixD ? '●' : '○';
-  document.getElementById('s6d').className = 'val ' + (STATE.sixD ? 'on' : 'off');
-  document.getElementById('s756').textContent = STATE.achsen;
-  document.getElementById('sds9').textContent = STATE.ds9 ? '◉' : '●';
-  document.getElementById('sds9').className = 'val ' + (STATE.ds9 ? 'pulse' : 'off');
-  document.getElementById('sorg').textContent = STATE.org || STATE.reorg ? '◉' : '●';
-  document.getElementById('sorg').className = 'val ' + (STATE.org || STATE.reorg ? 'pulse' : 'off');
-  document.getElementById('sengine').textContent = STATE.engine > 0 ? '●' : '○';
-  document.getElementById('smarkt').textContent = STATE.markt > 0 ? '●' : '○';
-  document.getElementById('sboerse').textContent = STATE.boerse > 0 ? '●' : '○';
 
-  // Ordner Status
-  document.querySelectorAll('.ordner').forEach(el => {
-    const name = el.dataset.ordner;
-    const val = STATE.ordner[name]?.value || 0;
-    const status = el.querySelector('.status');
-    if (val > 50) {
-      status.textContent = '◉';
-      status.className = 'status pulse';
-    } else if (val > 20) {
-      status.textContent = '●';
-      status.className = 'status on';
-    } else {
-      status.textContent = '○';
-      status.className = 'status';
-    }
-  });
-}
+// ─── GRUPPEN BILDUNG · FINAL NC ─────────────────────────────────
+const GRUPPEN = {
+  basis: ['3','6','9'],
+  kern: ['API','RUN','boerse'],
+  industrie: ['industry','markt','links'],
+  system: ['rechts','rolle','use','weg']
+};
 
-// ─── LOG ────────────────────────────────────────────────────────
-function log(msg, type = 'ok') {
-  const el = document.getElementById('log');
-  const time = new Date().toLocaleTimeString();
-  const cls = ['ok','flow','whirl','ds9','achse','6d'].includes(type) ? type : 'ok';
-  el.innerHTML += `<div>[${time}] <span class="${cls}">${msg}</span></div>`;
-  el.scrollTop = el.scrollHeight;
-  if (el.children.length > 30) el.removeChild(el.firstChild);
-}
+function connectGruppen() {
+  let status = '';
 
-// ─── TASTATUR ──────────────────────────────────────────────────
-document.addEventListener('keydown', (e) => {
-  if (e.key === ' ') { e.preventDefault(); sixDStep(); }
-  if (e.key === 'd' || e.key === 'D') toggleDs9();
-  if (e.key === 'a' || e.key === 'A') toggleAchsen();
-  if (e.key === 'o' || e.key === 'O') toggleOrg();
-  if (e.key === 'r' || e.key === 'R') toggleReorg();
-  if (e.key === 's' || e.key === 'S') doSlide();
-  if (e.key === 'w' || e.key === 'W') doWette();
-  if (e.key === 'x' || e.key === 'X') resetAll();
-});
+  for (const [name, members] of Object.entries(GRUPPEN)) {
+    const aktiv = members.filter(m => STATE.ordner[m]?.value > 30).length;
+    const total = members.length;
 
-// ─── BUTTONS ────────────────────────────────────────────────────
-document.getElementById('btn6d').addEventListener('click', sixDStep);
-document.getElementById('btnDs9').addEventListener('click', toggleDs9);
-document.getElementById('btnAchse').addEventListener('click', toggleAchsen);
-document.getElementById('btnOrg').addEventListener('click', toggleOrg);
-document.getElementById('btnReorg').addEventListener('click', toggleReorg);
-document.getElementById('btnSlide').addEventListener('click', doSlide);
-document.getElementById('btnWette').addEventListener('click', doWette);
-document.getElementById('btnReset').addEventListener('click', resetAll);
+    const icon =
+      aktiv === total ? '🟢' :
+      aktiv > 0       ? '🟡' :
+                        '🔴';
 
-// ─── ORDNER KLICKS ─────────────────────────────────────────────
-document.querySelectorAll('.ordner').forEach(el => {
-  el.addEventListener('click', () => {
-    const name = el.dataset.ordner;
-    const val = STATE.ordner[name];
-    if (val) {
-      val.value = (val.value + 10) % 100;
-      log(`📁 ${name} · ${Math.round(val.value)}%`, 'flow');
-      updateUI();
-      renderGalaxy();
-    }
-  });
-});
-
-// ─── INIT ──────────────────────────────────────────────────────
-log('🌀 IMPERIUM GALACTUM · 756 ACHSEN · 6D · geladen', 'ds9');
-log('⌨️  space=6D  d=DS9  a=ACHSEN  o=ORG  r=REORG  s=SLIDE  w=WETTE  x=RESET', 'flow');
-log('📐 3→9→27→81→243→729 · Deep Space Nine', 'achse');
-updateUI();
-renderGalaxy();
-
-// Automatische 6D-Animation
-setInterval(() => {
-  if (STATE.sixD) {
-    STATE.cycle++;
-    renderGalaxy();
+    status += `${icon} ${name} (${aktiv}/${total}) `;
+    log(`🔗 GRUPPE ${name} · ${aktiv}/${total} verbunden`, 'flow');
   }
-}, 100);
-</script>
+
+  const el = document.getElementById('gruppenStatus');
+  if (el) el.textContent = status;
+
+  return status;
+}
+
+
+// ─── CONNECT BUTTON · FINAL NC ──────────────────────────────────
+document.getElementById('btnConnect').addEventListener('click', () => {
+  connectGruppen();
+  log('🔗 GRUPPEN · neu verbunden', 'ds9');
+  updateUI();
+});
