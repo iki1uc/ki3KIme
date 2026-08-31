@@ -59,7 +59,7 @@ DOO / DOOR / DOCH / NC / OS / GANG / RING
 NOAH Level 14
 
 Quelle: GROUP.UNIVERSAL.js
-
+ 
 🔗 NCsync – Verbindung Imperium → GROUP.UNIVERSAL
 js
 GROUP.NCsync = function(state) {
