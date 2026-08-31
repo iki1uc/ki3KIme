@@ -42,3 +42,8 @@ function connectGruppen() {
   }
   document.getElementById('gruppenStatus').textContent = status;
 }
+document.getElementById('btnConnect').addEventListener('click', () => {
+  connectGruppen();
+  log('🔗 GRUPPEN · neu verbunden', 'ds9');
+  updateUI();
+});
