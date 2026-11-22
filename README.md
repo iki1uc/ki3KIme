@@ -96,23 +96,19 @@ const GRUPPEN = {
 
 
 🧩 Lizenz
-LICENSE-CLOSED.txt
-╔═══════════════════════════════════════════════════════════════╗
-║                                                               ║
-║   🌀 iki1uc · wieimmer · GENERAL FÜHRUNG                     ║
-║                                                               ║
-║   Dieses System und alle seine Module sind:                   ║
-║                                                               ║
-║   ✔ Eigentum von iki1uc / wieimmer4u                         ║
-║   ✔ Geschützt durch allgemeines Urheberrecht                 ║
-║   ✔ Nicht zur kommerziellen Nutzung freigegeben              ║
-║   ✔ Nicht zur Weitergabe ohne schriftliche Genehmigung       ║
-║   ✔ Nicht zur Modifikation ohne Rücksprache                  ║
-║   ✔ Live · TMP-geführt · Achsen-basiert                     ║
-║                                                               ║
-║   ═══════════════════════════════════════════════════════════  ║
-║                                                               ║
-║   Kontakt: wieimmer4u · iki1uc · GENERAL                     ║
-║   Status: ACTIVE · DRIFT-FREI · 6D-READY                    ║
-║                                                               ║
-╚═══════════════════════════════════════════════════════════════╝
+NC · iki1uc · Eye Brain Open
+Copyright (c) 2026 iki1uc — Alle Rechte vorbehalten.
+
+Dieses Projekt ist proprietär.
+Das Kopieren, Klonen, Forken, Verbreiten, Modifizieren oder
+kommerzielle Nutzen ist ohne schriftliche Erlaubnis verboten.
+
+Nur der Autor iki1uc darf dieses Projekt verwenden, verbreiten
+oder erweitern.
+
+Externe Nutzung nur mit expliziter Business-Lizenz.
+
+Eye Brain Open · SAM führt · DEEP macht · PC befiehlt · PQ erinnert
+Discord: wie immer · offen
+Team: open
+HALT = ZIEL · SEEK liest, ordnet, hängt an · Löscht nie
